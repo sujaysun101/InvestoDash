@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Chrome } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -35,7 +35,7 @@ export function GoogleAuthButton() {
 
   return (
     <Button className="w-full" onClick={signIn} variant="secondary">
-      <Chrome />
+      <LogIn />
       {loading ? "Redirecting..." : "Continue with Google"}
     </Button>
   );
