@@ -19,6 +19,18 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const supabase = createServerSupabaseClient();
+
+  if (supabase) {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+  }
+
   const body = requestSchema.parse(await request.json());
   const analysis =
     process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_MODEL
@@ -38,7 +50,6 @@ export async function POST(request: Request) {
     analyzed_at: new Date().toISOString(),
   };
 
-  const supabase = createServerSupabaseClient();
   if (supabase) {
     await supabase.from("deal_analysis").upsert({
       deal_id: body.dealId,

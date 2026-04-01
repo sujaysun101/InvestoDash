@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation";
+
 import {
   Card,
   CardContent,
@@ -6,9 +8,26 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ThesisOnboardingForm } from "@/features/auth/components/thesis-onboarding-form";
+import { requireUser } from "@/lib/auth";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { THESIS_SECTORS } from "@/lib/constants";
 
-export default function OnboardingPage() {
+export default async function OnboardingPage() {
+  const user = await requireUser();
+  const supabase = createServerSupabaseClient();
+
+  if (supabase) {
+    const { data: existingThesis } = await supabase
+      .from("thesis")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (existingThesis) {
+      redirect("/compare");
+    }
+  }
+
   return (
     <main className="mx-auto flex min-h-screen w-full max-w-4xl items-center px-6 py-16">
       <Card className="w-full">

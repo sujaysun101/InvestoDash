@@ -3,16 +3,19 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import { ThesisProfile, UsageCounter } from "@/lib/types";
 
 export function AppShell({
   children,
   thesis,
   usage,
+  userEmail,
 }: Readonly<{
   children: React.ReactNode;
   thesis: ThesisProfile | null;
   usage: UsageCounter;
+  userEmail: string | null;
 }>) {
   return (
     <div className="min-h-screen bg-background">
@@ -33,7 +36,7 @@ export function AppShell({
 
             <nav className="flex flex-col gap-2">
               <Button asChild className="justify-start" variant="ghost">
-                <Link href="/">Pipeline</Link>
+                <Link href="/compare">Pipeline</Link>
               </Button>
               <Button asChild className="justify-start" variant="ghost">
                 <Link href="/compare">Compare Deals</Link>
@@ -42,9 +45,19 @@ export function AppShell({
                 <Link href="/onboarding">Investment Thesis</Link>
               </Button>
               <Button asChild className="justify-start" variant="ghost">
-                <Link href="/login">Auth</Link>
+                <Link href="/login">Account</Link>
               </Button>
+              <SignOutButton />
             </nav>
+
+            {userEmail ? (
+              <div className="rounded-2xl border border-border/70 bg-secondary/25 px-4 py-3">
+                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                  Signed in
+                </p>
+                <p className="mt-2 truncate text-sm text-foreground">{userEmail}</p>
+              </div>
+            ) : null}
 
             <Card className="border-primary/20 bg-primary/5">
               <CardContent className="flex flex-col gap-3 pt-6">

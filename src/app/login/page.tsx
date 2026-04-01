@@ -7,24 +7,32 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { GoogleAuthButton } from "@/features/auth/components/google-auth-button";
+import { AuthForm } from "@/features/auth/components/auth-form";
+import { getCurrentUser } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const user = await getCurrentUser();
+
+  if (user) {
+    redirect("/onboarding");
+  }
+
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-6 py-16">
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl">InvestoDash</CardTitle>
           <CardDescription>
-            Sign in with Google to manage pipeline, analysis, and conviction
-            across every startup you review.
+            Sign in with email, password, or Google to manage pipeline,
+            analysis, and conviction across every startup you review.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <GoogleAuthButton />
+          <AuthForm />
           <p className="text-sm text-muted-foreground">
-            After your first login, you&apos;ll be prompted to complete your
-            investment thesis profile.
+            After your first login, you&apos;ll be prompted to complete your investment
+            thesis profile.
           </p>
           <Link
             className="text-sm text-primary underline-offset-4 hover:underline"

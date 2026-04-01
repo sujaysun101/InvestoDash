@@ -22,7 +22,7 @@ export function GoogleAuthButton() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/onboarding`,
+        redirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
       },
     });
 
@@ -34,7 +34,7 @@ export function GoogleAuthButton() {
   }
 
   return (
-    <Button className="w-full" onClick={signIn} variant="secondary">
+    <Button className="w-full" onClick={signIn} variant="outline">
       <LogIn />
       {loading ? "Redirecting..." : "Continue with Google"}
     </Button>

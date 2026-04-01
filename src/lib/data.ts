@@ -12,11 +12,23 @@ export async function loadDashboardData(): Promise<{
     return { deals: mockDeals, thesis: mockThesis, usage: mockUsage };
   }
 
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { deals: [], thesis: null, usage: mockUsage };
+  }
+
   const [{ data: dealsData }, { data: thesisData }, { data: usageData }] =
     await Promise.all([
-      supabase.from("deals").select("*"),
-      supabase.from("thesis").select("*").maybeSingle(),
-      supabase.from("usage_counters").select("*").maybeSingle(),
+      supabase.from("deals").select("*").eq("user_id", user.id),
+      supabase.from("thesis").select("*").eq("user_id", user.id).maybeSingle(),
+      supabase
+        .from("usage_counters")
+        .select("*")
+        .eq("user_id", user.id)
+        .maybeSingle(),
     ]);
 
   return {
@@ -37,6 +49,26 @@ export async function loadDashboardData(): Promise<{
 }
 
 export async function loadDealById(id: string) {
-  const { deals } = await loadDashboardData();
-  return deals.find((deal) => deal.id === id) ?? null;
+  const supabase = createServerSupabaseClient();
+
+  if (!supabase) {
+    return mockDeals.find((deal) => deal.id === id) ?? null;
+  }
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return null;
+  }
+
+  const { data } = await supabase
+    .from("deals")
+    .select("*")
+    .eq("id", id)
+    .eq("user_id", user.id)
+    .maybeSingle();
+
+  return (data as Deal | null) ?? null;
 }
