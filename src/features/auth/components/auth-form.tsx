@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
+import { DemoLoginButton } from "./demo-login-button";
 import { GoogleAuthButton } from "./google-auth-button";
 
 type Mode = "sign-in" | "sign-up";
@@ -36,7 +37,7 @@ export function AuthForm() {
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback?next=/onboarding`,
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=/auth/post-login`,
           },
         });
 
@@ -54,7 +55,7 @@ export function AuthForm() {
         if (error) throw error;
 
         toast.success("Signed in.");
-        window.location.href = "/onboarding";
+        window.location.href = "/auth/post-login";
       }
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Authentication failed.");
@@ -131,6 +132,7 @@ export function AuthForm() {
       </div>
 
       <GoogleAuthButton />
+      <DemoLoginButton />
     </div>
   );
 }
