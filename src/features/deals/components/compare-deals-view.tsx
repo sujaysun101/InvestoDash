@@ -41,6 +41,27 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     );
   }
 
+  const rows: Array<{
+    label: string;
+    getter: (deal: Deal) => React.ReactNode;
+  }> = [
+    {
+      label: "Recommendation",
+      getter: (deal) => <Badge>{deal.analysis?.recommendation.verdict ?? "N/A"}</Badge>,
+    },
+    { label: "Team score", getter: (deal) => deal.analysis?.team_score.score ?? "—" },
+    { label: "Market score", getter: (deal) => deal.analysis?.market_score.score ?? "—" },
+    { label: "Traction score", getter: (deal) => deal.analysis?.traction_score.score ?? "—" },
+    {
+      label: "Business model",
+      getter: (deal) => deal.analysis?.business_model_score.score ?? "—",
+    },
+    { label: "Risk score", getter: (deal) => deal.analysis?.overall_risk_score ?? "—" },
+    { label: "Thesis fit", getter: (deal) => deal.analysis?.thesis_fit_score ?? "—" },
+    { label: "Stage", getter: (deal) => deal.stage },
+    { label: "Sector", getter: (deal) => deal.sector },
+  ];
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
@@ -84,34 +105,11 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {[
-                [
-                  "Recommendation",
-                  (deal: Deal) => (
-                    <Badge>{deal.analysis?.recommendation.verdict ?? "N/A"}</Badge>
-                  ),
-                ],
-                ["Team score", (deal: Deal) => deal.analysis?.team_score.score ?? "—"],
-                ["Market score", (deal: Deal) => deal.analysis?.market_score.score ?? "—"],
-                [
-                  "Traction score",
-                  (deal: Deal) => deal.analysis?.traction_score.score ?? "—",
-                ],
-                [
-                  "Business model",
-                  (deal: Deal) => deal.analysis?.business_model_score.score ?? "—",
-                ],
-                ["Risk score", (deal: Deal) => deal.analysis?.overall_risk_score ?? "—"],
-                ["Thesis fit", (deal: Deal) => deal.analysis?.thesis_fit_score ?? "—"],
-                ["Stage", (deal: Deal) => deal.stage],
-                ["Sector", (deal: Deal) => deal.sector],
-              ].map(([label, getter]) => (
+              {rows.map(({ label, getter }) => (
                 <TableRow key={label}>
                   <TableCell className="font-medium">{label}</TableCell>
                   {selectedDeals.map((deal) => (
-                    <TableCell key={`${deal.id}-${label}`}>
-                      {(getter as (deal: Deal) => React.ReactNode)(deal)}
-                    </TableCell>
+                    <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
                   ))}
                 </TableRow>
               ))}
