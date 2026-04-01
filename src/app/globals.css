@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;800&family=Space+Mono:wght@400;700&family=Syne:wght@500;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,7 +27,7 @@ body {
     radial-gradient(circle at top right, rgba(116, 227, 183, 0.12), transparent 28%),
     hsl(var(--background));
   color: hsl(var(--foreground));
-  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-family: "DM Sans", var(--font-geist-sans), system-ui, sans-serif;
 }
 
 @layer utilities {
@@ -42,4 +44,16 @@ body {
   a {
     @apply text-inherit;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+.font-display {
+  font-family: "Syne", "DM Sans", system-ui, sans-serif;
+}
+
+.font-mono {
+  font-family: "Space Mono", var(--font-geist-mono), monospace;
 }
