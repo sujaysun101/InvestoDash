@@ -50,7 +50,11 @@ export async function requireUser(redirectTo = "/login") {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect(redirectTo);
+    if (redirectTo !== "/auth/post-login") {
+      redirect(redirectTo);
+    }
+
+    return null;
   }
 
   return user;

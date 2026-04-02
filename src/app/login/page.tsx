@@ -7,6 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AuthSessionRedirect } from "@/features/auth/components/auth-session-redirect";
 import { AuthForm } from "@/features/auth/components/auth-form";
 import { getCurrentUser } from "@/lib/auth";
 import { redirect } from "next/navigation";
@@ -22,6 +23,7 @@ export default async function LoginPage() {
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-6 py-16">
+      <AuthSessionRedirect />
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-3xl">InvestoDash</CardTitle>
