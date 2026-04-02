@@ -13,7 +13,7 @@ import { GoogleAuthButton } from "./google-auth-button";
 
 type Mode = "sign-in" | "sign-up";
 
-export function AuthForm() {
+export function AuthForm({ showDemoLogin = false }: { showDemoLogin?: boolean }) {
   const [mode, setMode] = useState<Mode>("sign-in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -132,7 +132,7 @@ export function AuthForm() {
       </div>
 
       <GoogleAuthButton />
-      <DemoLoginButton />
+      {showDemoLogin ? <DemoLoginButton /> : null}
     </div>
   );
 }

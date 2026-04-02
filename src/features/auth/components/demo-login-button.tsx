@@ -1,47 +1,39 @@
 "use client";
 
+import { useState } from "react";
 import { FlaskConical } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
-
-const demoEmail = process.env.NEXT_PUBLIC_TEST_EMAIL;
-const demoPassword = process.env.NEXT_PUBLIC_TEST_PASSWORD;
 
 export function DemoLoginButton() {
+  const [loading, setLoading] = useState(false);
+
   async function handleDemoLogin() {
-    const supabase = createBrowserSupabaseClient();
+    setLoading(true);
 
-    if (!supabase) {
-      toast.error("Add Supabase env vars to enable authentication.");
-      return;
+    try {
+      const response = await fetch("/api/demo-login", {
+        method: "POST",
+      });
+
+      if (!response.ok) {
+        throw new Error("Internal demo login is not available on this deployment.");
+      }
+
+      const data = (await response.json()) as { redirectTo: string };
+      window.location.href = data.redirectTo;
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Demo login failed.");
+    } finally {
+      setLoading(false);
     }
-
-    if (!demoEmail || !demoPassword) {
-      toast.error(
-        "Set NEXT_PUBLIC_TEST_EMAIL and NEXT_PUBLIC_TEST_PASSWORD to enable the demo login button.",
-      );
-      return;
-    }
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email: demoEmail,
-      password: demoPassword,
-    });
-
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-
-    window.location.href = "/auth/post-login";
   }
 
   return (
-    <Button className="w-full" onClick={handleDemoLogin} variant="ghost">
+    <Button className="w-full" disabled={loading} onClick={handleDemoLogin} variant="ghost">
       <FlaskConical />
-      Log in with Test Credentials
+      {loading ? "Opening internal demo..." : "Internal Demo Login"}
     </Button>
   );
 }
