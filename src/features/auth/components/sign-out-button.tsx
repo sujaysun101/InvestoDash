@@ -8,6 +8,10 @@ import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 export function SignOutButton() {
   async function signOut() {
+    await fetch("/api/demo-logout", {
+      method: "POST",
+    });
+
     const supabase = createBrowserSupabaseClient();
 
     if (!supabase) {

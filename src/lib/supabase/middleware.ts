@@ -1,17 +1,39 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+import { DEMO_COOKIE_NAME, hasDemoCookie } from "@/lib/demo-auth";
+
 export async function updateSession(request: NextRequest) {
   const response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
+  const hasDemoSession = hasDemoCookie(request.cookies.get(DEMO_COOKIE_NAME)?.value);
 
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
   if (!url || !anonKey) {
+    const isProtectedPath =
+      request.nextUrl.pathname.startsWith("/compare") ||
+      request.nextUrl.pathname.startsWith("/deals") ||
+      request.nextUrl.pathname.startsWith("/onboarding");
+
+    const isAuthPage = request.nextUrl.pathname.startsWith("/login");
+
+    if (isProtectedPath && !hasDemoSession) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/login";
+      return NextResponse.redirect(redirectUrl);
+    }
+
+    if (isAuthPage && hasDemoSession) {
+      const redirectUrl = request.nextUrl.clone();
+      redirectUrl.pathname = "/compare";
+      return NextResponse.redirect(redirectUrl);
+    }
+
     return response;
   }
 
@@ -40,13 +62,13 @@ export async function updateSession(request: NextRequest) {
 
   const isAuthPage = request.nextUrl.pathname.startsWith("/login");
 
-  if (isProtectedPath && !user) {
+  if (isProtectedPath && !user && !hasDemoSession) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/login";
     return NextResponse.redirect(redirectUrl);
   }
 
-  if (isAuthPage && user) {
+  if (isAuthPage && (user || hasDemoSession)) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/compare";
     return NextResponse.redirect(redirectUrl);

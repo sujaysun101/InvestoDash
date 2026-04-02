@@ -5,6 +5,11 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export default async function PostLoginPage() {
   const user = await requireUser("/login");
+
+  if (user.isDemo) {
+    redirect("/compare");
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {

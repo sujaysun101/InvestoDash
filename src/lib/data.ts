@@ -1,3 +1,6 @@
+import { cookies } from "next/headers";
+
+import { DEMO_COOKIE_NAME, hasDemoCookie } from "@/lib/demo-auth";
 import { mockDeals, mockThesis, mockUsage } from "@/lib/mock-data";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Deal, ThesisProfile, UsageCounter } from "@/lib/types";
@@ -7,6 +10,11 @@ export async function loadDashboardData(): Promise<{
   thesis: ThesisProfile | null;
   usage: UsageCounter;
 }> {
+  const cookieStore = cookies();
+  if (hasDemoCookie(cookieStore.get(DEMO_COOKIE_NAME)?.value)) {
+    return { deals: mockDeals, thesis: mockThesis, usage: mockUsage };
+  }
+
   const supabase = createServerSupabaseClient();
   if (!supabase) {
     return { deals: mockDeals, thesis: mockThesis, usage: mockUsage };
@@ -49,6 +57,11 @@ export async function loadDashboardData(): Promise<{
 }
 
 export async function loadDealById(id: string) {
+  const cookieStore = cookies();
+  if (hasDemoCookie(cookieStore.get(DEMO_COOKIE_NAME)?.value)) {
+    return mockDeals.find((deal) => deal.id === id) ?? null;
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {
