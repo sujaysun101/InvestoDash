@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
   const next = searchParams.get("next") ?? "/auth/post-login";
@@ -18,8 +18,8 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = createServerClient(url, anonKey, {
       cookies: {
-        get() {
-          return undefined;
+        get(name) {
+          return request.cookies.get(name)?.value;
         },
         set(name, value, options) {
           response.cookies.set({ name, value, ...options });
