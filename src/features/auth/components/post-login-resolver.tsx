@@ -18,6 +18,11 @@ export function PostLoginResolver() {
     let active = true;
 
     async function resolveDestination() {
+      if (!supabase) {
+        window.location.replace("/login");
+        return;
+      }
+
       const {
         data: { session },
       } = await supabase.auth.getSession();
