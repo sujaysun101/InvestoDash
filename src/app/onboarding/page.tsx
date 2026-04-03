@@ -14,6 +14,11 @@ import { THESIS_SECTORS } from "@/lib/constants";
 
 export default async function OnboardingPage() {
   const user = await requireUser();
+
+  if (!user) {
+    redirect("/login");
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (supabase) {
