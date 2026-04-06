@@ -17,6 +17,7 @@ export async function updateSession(request: NextRequest) {
   if (!url || !anonKey) {
     const isProtectedPath =
       request.nextUrl.pathname.startsWith("/compare") ||
+      request.nextUrl.pathname.startsWith("/dashboard") ||
       request.nextUrl.pathname.startsWith("/deals") ||
       request.nextUrl.pathname.startsWith("/onboarding");
 
@@ -30,7 +31,7 @@ export async function updateSession(request: NextRequest) {
 
     if (isAuthPage && hasDemoSession) {
       const redirectUrl = request.nextUrl.clone();
-      redirectUrl.pathname = "/compare";
+      redirectUrl.pathname = "/auth/post-login";
       return NextResponse.redirect(redirectUrl);
     }
 
@@ -57,6 +58,7 @@ export async function updateSession(request: NextRequest) {
 
   const isProtectedPath =
     request.nextUrl.pathname.startsWith("/compare") ||
+    request.nextUrl.pathname.startsWith("/dashboard") ||
     request.nextUrl.pathname.startsWith("/deals") ||
     request.nextUrl.pathname.startsWith("/onboarding");
 
@@ -70,7 +72,8 @@ export async function updateSession(request: NextRequest) {
 
   if (isAuthPage && (user || hasDemoSession)) {
     const redirectUrl = request.nextUrl.clone();
-    redirectUrl.pathname = "/compare";
+    // Go through /auth/post-login so onboarding is applied for new users.
+    redirectUrl.pathname = "/auth/post-login";
     return NextResponse.redirect(redirectUrl);
   }
 
