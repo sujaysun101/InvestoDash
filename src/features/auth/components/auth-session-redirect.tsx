@@ -18,20 +18,23 @@ export function AuthSessionRedirect({
 
     let active = true;
 
-    // Use getUser() (not getSession()) — it verifies the token with Supabase's
-    // server, so stale/expired JWTs do not trigger a false redirect.
-    void supabase.auth.getUser().then(({ data }) => {
-      if (active && data.user) {
+    // getSession() reads from local storage — fast, synchronous, and catches
+    // both PKCE and implicit-flow sessions immediately after OAuth returns.
+    // Any stale-token false-positive is safely caught downstream: PostLoginResolver
+    // calls getUser() (server-verified) and sends the user to /login if the
+    // session is actually expired, so there is no redirect loop.
+    void supabase.auth.getSession().then(({ data }) => {
+      if (active && data.session) {
         window.location.replace(redirectTo);
       }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      // Only react to a genuine sign-in, not a passive session restore that
-      // may carry a stale token.
-      if (event === "SIGNED_IN" && session) {
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      // Catch every auth state change (SIGNED_IN, TOKEN_REFRESHED, etc.) so
+      // that implicit-flow hash tokens and PKCE cookies are both handled.
+      if (session) {
         window.location.replace(redirectTo);
       }
     });
