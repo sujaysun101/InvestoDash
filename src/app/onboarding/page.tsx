@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { auth } from "@clerk/nextjs/server";
 
 import {
   Card,
@@ -8,24 +9,23 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ThesisOnboardingForm } from "@/features/auth/components/thesis-onboarding-form";
-import { requireUser } from "@/lib/auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { THESIS_SECTORS } from "@/lib/constants";
 
 export default async function OnboardingPage() {
-  const user = await requireUser();
+  const { userId } = await auth();
 
-  if (!user) {
+  if (!userId) {
     redirect("/login");
   }
 
-  const supabase = createServerSupabaseClient();
+  const supabase = await createServerSupabaseClient();
 
   if (supabase) {
     const { data: existingThesis } = await supabase
       .from("thesis")
       .select("user_id")
-      .eq("user_id", user.id)
+      .eq("user_id", userId)
       .maybeSingle();
 
     if (existingThesis) {

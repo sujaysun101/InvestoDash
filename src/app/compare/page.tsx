@@ -5,7 +5,7 @@ import { loadDashboardData } from "@/lib/data";
 
 export default async function ComparePage() {
   const user = await requireUser();
-  const { deals, thesis, usage } = await loadDashboardData();
+  const { deals, thesis, usage } = await loadDashboardData(user.id);
 
   return (
     <AppShell thesis={thesis} usage={usage} userEmail={user.email ?? null}>

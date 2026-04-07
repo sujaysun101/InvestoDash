@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 
 import {
@@ -19,19 +20,14 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
-  const supabase = createServerSupabaseClient();
+  const { userId } = await auth();
 
-  if (supabase) {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   const body = requestSchema.parse(await request.json());
+
   const analysis =
     process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_MODEL
       ? await runAnthropicAnalysis(body.extractedText)
@@ -49,6 +45,8 @@ export async function POST(request: Request) {
     web_context: webContext,
     analyzed_at: new Date().toISOString(),
   };
+
+  const supabase = await createServerSupabaseClient();
 
   if (supabase) {
     await supabase.from("deal_analysis").upsert({

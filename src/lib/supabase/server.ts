@@ -1,7 +1,12 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
 
-export function createServerSupabaseClient() {
+/**
+ * Creates a Supabase client for server-side DB queries.
+ * Auth is handled by Clerk — this client is for database access only.
+ * Returns null if Supabase env vars are not configured.
+ */
+export async function createServerSupabaseClient() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
@@ -9,7 +14,7 @@ export function createServerSupabaseClient() {
     return null;
   }
 
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
 
   return createServerClient(url, anonKey, {
     cookies: {

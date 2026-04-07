@@ -1,36 +1,19 @@
 "use client";
 
+import { useClerk } from "@clerk/nextjs";
 import { LogOut } from "lucide-react";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 export function SignOutButton() {
-  async function signOut() {
-    await fetch("/api/demo-logout", {
-      method: "POST",
-    });
-
-    const supabase = createBrowserSupabaseClient();
-
-    if (!supabase) {
-      window.location.href = "/login";
-      return;
-    }
-
-    const { error } = await supabase.auth.signOut();
-
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-
-    window.location.href = "/login";
-  }
+  const { signOut } = useClerk();
 
   return (
-    <Button className="justify-start" onClick={signOut} variant="ghost">
+    <Button
+      className="justify-start"
+      onClick={() => signOut({ redirectUrl: "/" })}
+      variant="ghost"
+    >
       <LogOut />
       Sign Out
     </Button>

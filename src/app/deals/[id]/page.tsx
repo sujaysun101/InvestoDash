@@ -1,4 +1,4 @@
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
 import { DealRoom } from "@/features/deals/components/deal-room";
@@ -8,17 +8,14 @@ import { loadDashboardData, loadDealById } from "@/lib/data";
 export default async function DealPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const user = await requireUser();
 
-  if (!user) {
-    redirect("/login");
-  }
-
   const [{ thesis, usage }, deal] = await Promise.all([
-    loadDashboardData(),
-    loadDealById(params.id),
+    loadDashboardData(user.id),
+    loadDealById(id, user.id),
   ]);
 
   if (!deal) {

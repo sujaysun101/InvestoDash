@@ -1,10 +1,12 @@
-import type { NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-import { updateSession } from "@/lib/supabase/middleware";
+const isPublicRoute = createRouteMatcher(["/", "/login(.*)"]);
 
-export async function middleware(request: NextRequest) {
-  return updateSession(request);
-}
+export default clerkMiddleware(async (auth, req) => {
+  if (!isPublicRoute(req)) {
+    await auth.protect();
+  }
+});
 
 export const config = {
   matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],

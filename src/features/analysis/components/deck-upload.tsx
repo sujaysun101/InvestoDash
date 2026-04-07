@@ -5,7 +5,6 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { parseDeckPdf } from "@/features/analysis/lib/deck-parser";
-import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 export function DeckUpload({
   dealId,
@@ -25,19 +24,19 @@ export function DeckUpload({
       const parsedText = await parseDeckPdf(file);
       onDeckParsed(parsedText);
 
-      const supabase = createBrowserSupabaseClient();
-      if (supabase) {
+      // Upload to Supabase storage if configured
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+      if (supabaseUrl && supabaseKey) {
+        const { createBrowserClient } = await import("@supabase/ssr");
+        const supabase = createBrowserClient(supabaseUrl, supabaseKey);
         const filePath = `${dealId}/${Date.now()}-${file.name}`;
-        await supabase.storage.from("pitch-decks").upload(filePath, file, {
-          upsert: true,
-        });
+        await supabase.storage.from("pitch-decks").upload(filePath, file, { upsert: true });
       }
 
       toast.success("Deck uploaded and parsed.");
     } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : "Could not parse deck.",
-      );
+      toast.error(error instanceof Error ? error.message : "Could not parse deck.");
     } finally {
       setUploading(false);
     }
