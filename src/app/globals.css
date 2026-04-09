@@ -19,6 +19,11 @@
   --destructive: 0 78% 67%;
   --destructive-foreground: 210 40% 98%;
   --ring: 152 62% 59%;
+  --popover: 224 38% 10%;
+  --popover-foreground: 210 40% 98%;
+  --accent: 223 26% 16%;
+  --accent-foreground: 210 40% 98%;
+  --muted: 223 26% 16%;
 }
 
 body {

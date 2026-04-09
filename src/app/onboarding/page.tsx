@@ -9,8 +9,9 @@ import {
 } from "@/components/ui/card";
 import { ThesisOnboardingForm } from "@/features/auth/components/thesis-onboarding-form";
 import { requireUser } from "@/lib/auth";
+import { SECTORS } from "@/lib/constants";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { THESIS_SECTORS } from "@/lib/constants";
+import { ThesisProfile } from "@/lib/types";
 
 export default async function OnboardingPage() {
   const user = await requireUser();
@@ -20,16 +21,25 @@ export default async function OnboardingPage() {
   }
 
   const supabase = createServerSupabaseClient();
+  let initialThesis: ThesisProfile | null = null;
 
   if (supabase) {
-    const { data: existingThesis } = await supabase
+    const { data } = await supabase
       .from("thesis")
-      .select("user_id")
+      .select("*")
       .eq("user_id", user.id)
       .maybeSingle();
 
-    if (existingThesis) {
-      redirect("/compare");
+    if (data) {
+      initialThesis = {
+        sectors: (data as { sectors: string[] }).sectors ?? [],
+        check_size_range:
+          (data as { check_size_range?: string }).check_size_range ?? "",
+        target_stage: (data as { target_stage?: string[] }).target_stage ?? [],
+        geography_preference:
+          (data as { geography_preference?: string }).geography_preference ?? "",
+        custom_note: (data as { custom_note?: string | null }).custom_note ?? "",
+      };
     }
   }
 
@@ -43,7 +53,7 @@ export default async function OnboardingPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ThesisOnboardingForm sectors={THESIS_SECTORS} />
+          <ThesisOnboardingForm sectors={[...SECTORS]} initialThesis={initialThesis} />
         </CardContent>
       </Card>
     </main>

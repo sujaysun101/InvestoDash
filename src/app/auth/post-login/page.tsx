@@ -11,10 +11,6 @@ export default async function PostLoginPage() {
     return <PostLoginResolver />;
   }
 
-  if (user.isDemo) {
-    redirect("/compare");
-  }
-
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {

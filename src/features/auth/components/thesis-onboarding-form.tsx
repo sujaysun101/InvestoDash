@@ -7,17 +7,31 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { STAGES } from "@/lib/constants";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
+import { ThesisProfile } from "@/lib/types";
 
-const stages = ["Pre-Seed", "Seed", "Series A"];
-
-export function ThesisOnboardingForm({ sectors }: { sectors: string[] }) {
+export function ThesisOnboardingForm({
+  sectors,
+  initialThesis,
+}: {
+  sectors: string[];
+  initialThesis?: ThesisProfile | null;
+}) {
   const router = useRouter();
-  const [selectedSectors, setSelectedSectors] = useState<string[]>(["Fintech"]);
-  const [selectedStages, setSelectedStages] = useState<string[]>(["Seed"]);
-  const [checkSizeRange, setCheckSizeRange] = useState("$25k-$100k");
-  const [geographyPreference, setGeographyPreference] = useState("United States");
-  const [notes, setNotes] = useState("");
+  const [selectedSectors, setSelectedSectors] = useState<string[]>(
+    initialThesis?.sectors?.length ? initialThesis.sectors : ["Fintech"],
+  );
+  const [selectedStages, setSelectedStages] = useState<string[]>(
+    initialThesis?.target_stage?.length ? initialThesis.target_stage : ["Seed"],
+  );
+  const [checkSizeRange, setCheckSizeRange] = useState(
+    initialThesis?.check_size_range ?? "$25k-$100k",
+  );
+  const [geographyPreference, setGeographyPreference] = useState(
+    initialThesis?.geography_preference ?? "United States",
+  );
+  const [notes, setNotes] = useState(initialThesis?.custom_note ?? "");
   const [loading, setLoading] = useState(false);
 
   function toggleValue(current: string[], value: string) {
@@ -48,10 +62,13 @@ export function ThesisOnboardingForm({ sectors }: { sectors: string[] }) {
           throw new Error("No authenticated user found.");
         }
 
-        const { error } = await supabase.from("thesis").upsert({
-          user_id: user.id,
-          ...payload,
-        });
+        const { error } = await supabase.from("thesis").upsert(
+          {
+            user_id: user.id,
+            ...payload,
+          },
+          { onConflict: "user_id" },
+        );
 
         if (error) throw error;
       } else {
@@ -59,7 +76,7 @@ export function ThesisOnboardingForm({ sectors }: { sectors: string[] }) {
       }
 
       toast.success("Investment thesis saved.");
-      router.push("/");
+      router.push("/dashboard");
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not save thesis.");
@@ -99,7 +116,7 @@ export function ThesisOnboardingForm({ sectors }: { sectors: string[] }) {
 
       <Field label="Target stage">
         <div className="flex flex-wrap gap-3">
-          {stages.map((stage) => (
+          {STAGES.map((stage) => (
             <Button
               key={stage}
               onClick={() => setSelectedStages((current) => toggleValue(current, stage))}

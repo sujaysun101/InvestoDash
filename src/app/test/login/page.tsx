@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import {
   Card,
@@ -8,39 +9,33 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { AuthSessionRedirect } from "@/features/auth/components/auth-session-redirect";
-import { AuthForm } from "@/features/auth/components/auth-form";
+import { TestAuthForm } from "@/features/auth/components/test-auth-form";
 import { getCurrentUser } from "@/lib/auth";
-import { redirect } from "next/navigation";
 
-export default async function LoginPage() {
+export default async function TestLoginPage() {
   const user = await getCurrentUser();
-
   if (user) {
-    redirect("/auth/post-login");
+    redirect("/dashboard");
   }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-6 py-16">
-      <AuthSessionRedirect />
+      <AuthSessionRedirect redirectTo="/dashboard" />
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-3xl">InvestoDash</CardTitle>
+          <CardTitle className="text-3xl">InvestoDash Test</CardTitle>
           <CardDescription>
-            Sign in with email, password, or Google to manage pipeline,
-            analysis, and conviction across every startup you review.
+            This environment only accepts the test account credentials. No email
+            confirmation flow is required here.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <AuthForm />
-          <p className="text-sm text-muted-foreground">
-            After your first login, you&apos;ll be prompted to complete your investment
-            thesis profile.
-          </p>
+          <TestAuthForm />
           <Link
             className="text-sm text-primary underline-offset-4 hover:underline"
-            href="/"
+            href="/login"
           >
-            Preview the product shell
+            Go to regular InvestoDash login
           </Link>
         </CardContent>
       </Card>

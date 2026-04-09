@@ -1,4 +1,3 @@
-import Link from "next/link";
 import {
   ArrowRight,
   Brain,
@@ -17,6 +16,10 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://investodash.com";
+const TEST_APP_URL =
+  process.env.NEXT_PUBLIC_TEST_APP_URL ?? "https://test.investodash.com";
 
 const featureCards = [
   {
@@ -103,19 +106,29 @@ export function LandingPage() {
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild className="h-12 rounded-full bg-blue-600 px-6 text-white hover:bg-blue-500">
-                  <Link href="/login">
+                  <a href={`${APP_URL}/login`}>
                     Try for Free
                     <ArrowRight />
-                  </Link>
+                  </a>
                 </Button>
                 <Button
                   asChild
                   className="h-12 rounded-full border-white/15 bg-white/0 px-6 text-white hover:bg-white/6"
                   variant="outline"
                 >
-                  <a href="#sample-report">See a Sample Report</a>
+                  <a href={`${TEST_APP_URL}/login`}>Open Test Environment</a>
                 </Button>
               </div>
+              <p className="mt-3 text-xs text-white/55">
+                Regular:{" "}
+                <a className="underline underline-offset-4" href={`${APP_URL}/login`}>
+                  {APP_URL}/login
+                </a>{" "}
+                | Test:{" "}
+                <a className="underline underline-offset-4" href={`${TEST_APP_URL}/login`}>
+                  {TEST_APP_URL}/login
+                </a>
+              </p>
 
               <div className="mt-10 grid max-w-xl grid-cols-3 gap-4 border-t border-white/8 pt-6">
                 <Metric value="<60s" label="to generate a structured memo" />
@@ -643,7 +656,7 @@ function PricingCard({
         }`}
         variant={highlighted ? "default" : "outline"}
       >
-        <Link href="/login">{cta}</Link>
+        <a href={`${APP_URL}/login`}>{cta}</a>
       </Button>
     </div>
   );
