@@ -7,6 +7,7 @@ import {
 } from "@/features/analysis/server/anthropic";
 import { buildThesisFit } from "@/features/analysis/server/thesis-fit";
 import { buildWebResearchSummary } from "@/features/analysis/server/web-research";
+import { ANALYSIS_PAYWALL_ENABLED } from "@/lib/constants";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ThesisProfile } from "@/lib/types";
 
@@ -74,7 +75,9 @@ export async function POST(request: Request) {
       raw_json: fullAnalysis,
     });
 
-    await supabase.rpc("increment_analysis_usage");
+    if (ANALYSIS_PAYWALL_ENABLED) {
+      await supabase.rpc("increment_analysis_usage");
+    }
   }
 
   return NextResponse.json(fullAnalysis);

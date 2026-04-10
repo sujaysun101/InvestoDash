@@ -1,13 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  async redirects() {
-    return [
-      {
-        source: "/test/login",
-        destination: "/login",
-        permanent: true,
-      },
-    ];
+  experimental: {
+    // officeparser pulls file-type with package exports that webpack mishandles
+    serverComponentsExternalPackages: ["officeparser", "file-type"],
   },
 };
 

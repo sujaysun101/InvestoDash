@@ -23,6 +23,7 @@
     "jspdf": "^4.2.1",
     "lucide-react": "^1.7.0",
     "next": "14.2.30",
+    "officeparser": "^6.0.7",
     "openai": "^6.34.0",
     "pdf-parse": "^2.4.5",
     "pdfjs-dist": "^5.6.205",

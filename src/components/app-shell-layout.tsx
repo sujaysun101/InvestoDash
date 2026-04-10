@@ -14,6 +14,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
+import { ANALYSIS_PAYWALL_ENABLED } from "@/lib/constants";
 import { createClient } from "@/lib/supabase/client";
 import { ThesisProfile, UsageCounter } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -221,7 +222,7 @@ function SidebarInner({
   onOpenNotifications: () => void;
 }) {
   const remaining = usage.remaining;
-  const showLastFree = remaining === 1;
+  const showLastFree = ANALYSIS_PAYWALL_ENABLED && remaining === 1;
 
   return (
     <div className="flex h-full flex-col gap-8">
@@ -259,6 +260,9 @@ function SidebarInner({
           <Link href="/dashboard">Pipeline</Link>
         </Button>
         <Button asChild className="justify-start" variant="ghost">
+          <Link href="/analytics">Analytics</Link>
+        </Button>
+        <Button asChild className="justify-start" variant="ghost">
           <Link href="/compare">Compare Deals</Link>
         </Button>
         <Button asChild className="justify-start" variant="ghost">
@@ -282,7 +286,9 @@ function SidebarInner({
       <Card className="border-primary/20 bg-primary/5">
         <CardContent className="flex flex-col gap-3 pt-6">
           <div className="flex flex-wrap items-center justify-between gap-2">
-            <span className="text-sm font-medium">Free analyses</span>
+            <span className="text-sm font-medium">
+              {ANALYSIS_PAYWALL_ENABLED ? "Free analyses" : "Analyses"}
+            </span>
             <div className="flex items-center gap-2">
               {showLastFree ? (
                 <Badge
@@ -292,15 +298,23 @@ function SidebarInner({
                   Last free analysis!
                 </Badge>
               ) : null}
-              <Badge variant={usage.remaining > 0 ? "secondary" : "destructive"}>
-                {usage.used}/{usage.limit}
-              </Badge>
+              {ANALYSIS_PAYWALL_ENABLED ? (
+                <Badge variant={usage.remaining > 0 ? "secondary" : "destructive"}>
+                  {usage.used}/{usage.limit}
+                </Badge>
+              ) : (
+                <Badge variant="secondary">{usage.used} completed</Badge>
+              )}
             </div>
           </div>
           <p className="text-sm text-muted-foreground">
-            {usage.remaining > 0
-              ? `${usage.remaining} ${remainingLabel} left before the paywall.`
-              : "Free tier exhausted. Prompt the subscription modal on next run."}
+            {ANALYSIS_PAYWALL_ENABLED
+              ? usage.remaining > 0
+                ? `${usage.remaining} ${remainingLabel} left on the free tier.`
+                : "Free tier exhausted. Upgrade to run more analyses."
+              : usage.used === 0
+                ? "Run an analysis from a deal or upload a deck on Pipeline."
+                : `${usage.used} analysis run${usage.used === 1 ? "" : "ses"} so far.`}
           </p>
         </CardContent>
       </Card>

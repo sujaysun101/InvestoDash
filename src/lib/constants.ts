@@ -1,5 +1,17 @@
 import { PipelineStage } from "@/lib/types";
 
+/**
+ * When false, analysis limits are not enforced (no upgrade prompts or usage blocking).
+ * Set to true to restore free-tier behavior.
+ */
+export const ANALYSIS_PAYWALL_ENABLED = false;
+
+/** HTML `accept` for pitch / diligence uploads (server ingests these types). */
+export const PITCH_FILE_ACCEPT =
+  ".pdf,.ppt,.pptx,.potx,.doc,.docx,.dotx,.xls,.xlsx,.xltx,.csv,.rtf,.odt,.odp,.ods,.txt,.md,.json,.html,.htm,.xml,.key," +
+  ".png,.jpg,.jpeg,.gif,.webp,.bmp,.svg,.tif,.tiff,.heic,.heif," +
+  ".mp4,.webm,.mov,.m4v,.avi,.mkv";
+
 export const PIPELINE_STAGES: PipelineStage[] = [
   "Inbox",
   "Reviewing",

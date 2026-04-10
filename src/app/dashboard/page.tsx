@@ -37,7 +37,7 @@ export default async function DashboardPage() {
 
   return (
     <AppShell thesis={thesis} usage={usage} userEmail={user.email ?? null}>
-      <DashboardClient deals={deals as Deal[]} usage={usage} />
+      <DashboardClient deals={deals as Deal[]} />
     </AppShell>
   );
 }

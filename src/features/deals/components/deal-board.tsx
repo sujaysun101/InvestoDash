@@ -350,9 +350,14 @@ function DealCardInner({ deal }: { deal: Deal }) {
     <Link href={`/deals/${deal.id}`}>
       <div className="rounded-2xl border border-border/60 bg-secondary/20 p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:bg-secondary/40 hover:shadow-md">
         <div className="flex items-start justify-between gap-3">
-          <div>
+          <div className="min-w-0">
             <p className="line-clamp-1 font-medium">{deal.company_name}</p>
-            <p className="mt-1 text-xs text-muted-foreground">
+            {deal.founder_name ? (
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">
+                {deal.founder_name}
+              </p>
+            ) : null}
+            <p className="mt-0.5 text-xs text-muted-foreground">
               {formatDate(deal.date_added)}
             </p>
           </div>

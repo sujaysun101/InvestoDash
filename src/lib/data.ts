@@ -1,7 +1,24 @@
+import { ANALYSIS_PAYWALL_ENABLED } from "@/lib/constants";
 import { mapSupabaseDealToDeal } from "@/lib/deal-mapper";
 import { mockDeals, mockThesis, mockUsage } from "@/lib/mock-data";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Deal, ThesisProfile, UsageCounter } from "@/lib/types";
+
+const UNLIMITED_USAGE_SENTINEL = 999_999;
+
+function usageForPolicy(
+  usedCount: number,
+  limited: UsageCounter,
+): UsageCounter {
+  if (!ANALYSIS_PAYWALL_ENABLED) {
+    return {
+      used: usedCount,
+      limit: UNLIMITED_USAGE_SENTINEL,
+      remaining: UNLIMITED_USAGE_SENTINEL,
+    };
+  }
+  return limited;
+}
 
 export async function loadDashboardData(): Promise<{
   deals: Deal[];
@@ -71,10 +88,15 @@ export async function loadDashboardData(): Promise<{
   for (const a of analysesData ?? []) {
     completeIds.add((a as { deal_id: string }).deal_id);
   }
-  const used = Math.min(completeIds.size, limit);
-  const remaining = Math.max(0, limit - used);
+  const usedActual = completeIds.size;
+  const used = ANALYSIS_PAYWALL_ENABLED
+    ? Math.min(usedActual, limit)
+    : usedActual;
+  const remaining = ANALYSIS_PAYWALL_ENABLED
+    ? Math.max(0, limit - used)
+    : UNLIMITED_USAGE_SENTINEL;
 
-  const usage: UsageCounter =
+  const usageLimited: UsageCounter =
     usageData && "limit_count" in usageData
       ? {
           used,
@@ -85,6 +107,8 @@ export async function loadDashboardData(): Promise<{
           ),
         }
       : { used, limit, remaining };
+
+  const usage = usageForPolicy(usedActual, usageLimited);
 
   const thesis: ThesisProfile | null = thesisData
     ? {
@@ -174,7 +198,9 @@ export async function loadDealById(id: string) {
 
   const limit = (usageRow?.limit_count as number) ?? 3;
   const used = usageRow?.used ?? 0;
-  const remaining = Math.max(0, limit - used);
+  const remaining = ANALYSIS_PAYWALL_ENABLED
+    ? Math.max(0, limit - used)
+    : UNLIMITED_USAGE_SENTINEL;
 
   const activities = (activityRows ?? []).map((a) => ({
     id: (a as { id: string }).id,

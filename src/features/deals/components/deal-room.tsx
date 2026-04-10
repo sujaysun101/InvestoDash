@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+
+import { buildMemoHtml } from "@/features/deals/lib/memo-export";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,7 +26,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { AnalysisRadarChart } from "@/features/analysis/components/analysis-radar-chart";
-import { PIPELINE_STAGES } from "@/lib/constants";
+import {
+  ANALYSIS_PAYWALL_ENABLED,
+  PITCH_FILE_ACCEPT,
+  PIPELINE_STAGES,
+} from "@/lib/constants";
 import { formatDate } from "@/lib/format-date";
 import { createClient } from "@/lib/supabase/client";
 import { Deal, PipelineStage, ThesisProfile, UsageCounter } from "@/lib/types";
@@ -117,7 +123,7 @@ export function DealRoom({
   }
 
   async function runAi(file: File) {
-    if (usage.remaining <= 0) {
+    if (ANALYSIS_PAYWALL_ENABLED && usage.remaining <= 0) {
       toast.error("No analyses remaining on the free tier.");
       return;
     }
@@ -149,20 +155,7 @@ export function DealRoom({
   function exportMemo() {
     const w = window.open("", "_blank");
     if (!w) return;
-    const html = `
-      <!doctype html><html><head><title>Memo</title>
-      <style>
-        body { font-family: system-ui; padding: 32px; background: #0b0f16; color: #e8eef7; }
-        h1 { font-size: 22px; }
-        section { margin-top: 16px; }
-      </style></head><body>
-      <h1>INVESTMENT MEMO — ${deal.company_name}</h1>
-      <p>Generated: ${formatDate(new Date().toISOString())}</p>
-      <section><strong>RECOMMENDATION:</strong> ${deal.analysis?.recommendation.verdict ?? "N/A"}</section>
-      <section><strong>AI SUMMARY</strong><br/>${deal.analysis?.executive_summary ?? ""}</section>
-      <section><strong>INVESTOR NOTES</strong><br/>${memo}</section>
-      <script>window.onload = () => window.print();</script>
-      </body></html>`;
+    const html = buildMemoHtml(deal, memo);
     w.document.write(html);
     w.document.close();
   }
@@ -175,7 +168,7 @@ export function DealRoom({
       <input
         ref={fileInputRef}
         type="file"
-        accept=".pdf"
+        accept={PITCH_FILE_ACCEPT}
         className="hidden"
         onChange={(e) => {
           const f = e.target.files?.[0];
@@ -200,9 +193,22 @@ export function DealRoom({
               <Badge>{deal.sector}</Badge>
               <Badge variant="outline">{deal.stage}</Badge>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">
-              Added {formatDate(deal.date_added)}
-            </p>
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+              {deal.founder_name ? (
+                <span>Founder: <span className="text-foreground">{deal.founder_name}</span></span>
+              ) : null}
+              {deal.website_url ? (
+                <a
+                  href={deal.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-primary hover:underline"
+                >
+                  Website <ExternalLink className="h-3 w-3" />
+                </a>
+              ) : null}
+              <span>Added {formatDate(deal.date_added)}</span>
+            </div>
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -283,26 +289,74 @@ export function DealRoom({
               <div className="flex items-center justify-between gap-3">
                 <CardTitle>AI summary</CardTitle>
                 {deal.analysis ? (
-                  <Badge>{deal.analysis.recommendation.verdict}</Badge>
+                  <Badge
+                    className={
+                      deal.analysis.recommendation.verdict === "STRONG_YES"
+                        ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+                        : deal.analysis.recommendation.verdict === "PASS"
+                          ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
+                          : "bg-amber-500/20 text-amber-300 border-amber-500/30"
+                    }
+                    variant="outline"
+                  >
+                    {deal.analysis.recommendation.verdict}
+                  </Badge>
                 ) : null}
               </div>
             </CardHeader>
             <CardContent className="space-y-4 text-sm text-muted-foreground">
               <p>{deal.analysis?.executive_summary ?? "—"}</p>
               <div>
-                <p className="font-medium text-foreground">Team notes</p>
+                <p className="font-medium text-foreground">Team</p>
                 <p className="mt-1">{deal.analysis?.team_score.reasoning ?? "—"}</p>
               </div>
               <div>
-                <p className="font-medium text-foreground">Market notes</p>
+                <p className="font-medium text-foreground">Market</p>
                 <p className="mt-1">{deal.analysis?.market_score.reasoning ?? "—"}</p>
               </div>
               <div>
-                <p className="font-medium text-foreground">Risk notes</p>
-                <p className="mt-1">
-                  {deal.analysis?.red_flags?.join("; ") || "—"}
-                </p>
+                <p className="font-medium text-foreground">Traction</p>
+                <p className="mt-1">{deal.analysis?.traction_score.reasoning ?? "—"}</p>
               </div>
+              {deal.analysis?.strengths && deal.analysis.strengths.length > 0 ? (
+                <div>
+                  <p className="font-medium text-emerald-400">Strengths</p>
+                  <ul className="mt-1 space-y-1">
+                    {deal.analysis.strengths.map((s, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {deal.analysis?.red_flags && deal.analysis.red_flags.length > 0 ? (
+                <div>
+                  <p className="font-medium text-rose-400">Red flags</p>
+                  <ul className="mt-1 space-y-1">
+                    {deal.analysis.red_flags.map((r, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-rose-400" />
+                        {r}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              {deal.analysis?.missing_info && deal.analysis.missing_info.length > 0 ? (
+                <div>
+                  <p className="font-medium text-amber-400">Missing info</p>
+                  <ul className="mt-1 space-y-1">
+                    {deal.analysis.missing_info.map((m, i) => (
+                      <li key={i} className="flex items-start gap-2">
+                        <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
+                        {m}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </CardContent>
           </Card>
 
@@ -345,9 +399,21 @@ export function DealRoom({
 
           <Card>
             <CardHeader>
-              <CardTitle>Investment thesis alignment</CardTitle>
+              <div className="flex items-center justify-between gap-3">
+                <CardTitle>Thesis alignment</CardTitle>
+                {deal.analysis?.thesis_fit_score ? (
+                  <span className="rounded-full border border-primary/30 bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
+                    {deal.analysis.thesis_fit_score}/10
+                  </span>
+                ) : null}
+              </div>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2 text-sm text-muted-foreground">
+            <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground">
+              {deal.analysis?.thesis_fit_reason ? (
+                <p className="rounded-lg border border-border/50 bg-secondary/20 px-3 py-2 text-foreground">
+                  {deal.analysis.thesis_fit_reason}
+                </p>
+              ) : null}
               {thesis ? (
                 <>
                   <p>Sectors: {thesis.sectors.join(", ")}</p>
@@ -356,7 +422,7 @@ export function DealRoom({
                   <p>Geo: {thesis.geography_preference}</p>
                 </>
               ) : (
-                <p>Complete the thesis profile to unlock fit scoring context.</p>
+                <p>Complete the thesis profile to unlock contextual fit scoring.</p>
               )}
             </CardContent>
           </Card>

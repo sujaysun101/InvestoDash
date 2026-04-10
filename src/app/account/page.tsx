@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { AppShell } from "@/components/app-shell";
@@ -55,35 +54,12 @@ export default async function AccountPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Subscription</CardTitle>
-            <CardDescription>Free plan limits.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="font-medium">Free Plan</p>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-              <div
-                className="h-full bg-primary"
-                style={{
-                  width: `${Math.min(100, (usage.used / Math.max(usage.limit, 1)) * 100)}%`,
-                }}
-              />
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {usage.used}/{usage.limit} analyses used
-            </p>
-            <Button asChild>
-              <Link href="/pricing">Upgrade to Pro →</Link>
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Usage</CardTitle>
+            <CardTitle>Workspace</CardTitle>
+            <CardDescription>Your pipeline and analysis activity.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-2 text-sm text-muted-foreground">
             <p>Deals in pipeline: {deals.length}</p>
-            <p>Analyses run: {usage.used}</p>
+            <p>Analyses completed: {usage.used}</p>
             <p>Last active: {formatDate(lastActive)}</p>
           </CardContent>
         </Card>

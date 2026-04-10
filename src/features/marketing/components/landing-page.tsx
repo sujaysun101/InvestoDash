@@ -15,7 +15,6 @@ import {
   XCircle,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 const featureCards = [
@@ -71,23 +70,55 @@ export function LandingPage() {
         className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[720px] bg-[radial-gradient(circle_at_20%_10%,rgba(37,99,235,0.26),transparent_35%),radial-gradient(circle_at_80%_18%,rgba(15,196,142,0.16),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_45%)]"
       />
 
-      <section className="relative border-b border-white/8 px-6 pb-20 pt-6 sm:px-8 lg:px-12">
+      <section className="relative border-b border-white/8 px-6 pb-20 pt-0 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-[1380px] flex-col gap-12">
-          <header className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex size-11 items-center justify-center rounded-2xl border border-blue-400/30 bg-blue-500/12 shadow-[0_0_40px_rgba(37,99,235,0.24)]">
-                <span className="font-mono text-sm text-blue-300">ID</span>
-              </div>
-              <div>
-                <p className="font-display text-xl tracking-tight">InvestoDash</p>
-                <p className="text-xs uppercase tracking-[0.28em] text-white/45">
-                  AI-powered deal OS
-                </p>
+          <header className="sticky top-0 z-50 -mx-6 border-b border-white/10 bg-[#0f1117]/90 px-6 py-4 backdrop-blur-md sm:-mx-8 sm:px-8 lg:-mx-12 lg:px-12">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <Link href="/" className="flex min-w-0 items-center gap-3">
+                <div className="flex size-11 shrink-0 items-center justify-center rounded-2xl border border-blue-400/30 bg-blue-500/12 shadow-[0_0_40px_rgba(37,99,235,0.24)]">
+                  <span className="font-mono text-sm text-blue-300">ID</span>
+                </div>
+                <div className="min-w-0">
+                  <p className="font-display text-xl tracking-tight">InvestoDash</p>
+                  <p className="text-xs uppercase tracking-[0.28em] text-white/45">
+                    AI-powered deal OS
+                  </p>
+                </div>
+              </Link>
+
+              <nav
+                aria-label="Marketing"
+                className="order-3 flex w-full basis-full flex-wrap items-center justify-center gap-x-6 gap-y-2 border-t border-white/10 pt-4 text-sm text-white/65 sm:order-none sm:w-auto sm:basis-auto sm:border-0 sm:pt-0 lg:gap-x-8"
+              >
+                <Link className="transition-colors hover:text-white" href="#how-it-works">
+                  How it works
+                </Link>
+                <Link className="transition-colors hover:text-white" href="#features">
+                  Features
+                </Link>
+                <Link className="transition-colors hover:text-white" href="#sample-report">
+                  Sample report
+                </Link>
+                <Link className="transition-colors hover:text-white" href="#pricing">
+                  Pricing
+                </Link>
+              </nav>
+
+              <div className="flex shrink-0 items-center gap-3">
+                <Link
+                  className="text-sm text-white/70 transition-colors hover:text-white"
+                  href="/login"
+                >
+                  Sign in
+                </Link>
+                <Button
+                  asChild
+                  className="h-10 rounded-full bg-blue-600 px-4 text-sm text-white hover:bg-blue-500"
+                >
+                  <Link href="/login">Get started</Link>
+                </Button>
               </div>
             </div>
-            <Badge className="hidden bg-white/6 text-white/80 sm:inline-flex" variant="outline">
-              Codex Creator Challenge
-            </Badge>
           </header>
 
           <div className="grid gap-12 lg:grid-cols-[minmax(0,1.02fr)_minmax(520px,0.98fr)] lg:items-center">
@@ -133,7 +164,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="px-6 py-24 sm:px-8 lg:px-12">
+      <section id="how-it-works" className="scroll-mt-28 px-6 py-24 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-[1380px]">
           <SectionIntro
             eyebrow="How it works"
@@ -164,7 +195,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section className="border-y border-white/8 bg-white/[0.02] px-6 py-24 sm:px-8 lg:px-12">
+      <section id="features" className="scroll-mt-28 border-y border-white/8 bg-white/[0.02] px-6 py-24 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-[1380px]">
           <SectionIntro
             eyebrow="Features"
@@ -191,7 +222,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="sample-report" className="px-6 py-24 sm:px-8 lg:px-12">
+      <section id="sample-report" className="scroll-mt-28 px-6 py-24 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-[1380px]">
           <SectionIntro
             eyebrow="Sample report preview"
@@ -277,7 +308,7 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="pricing" className="border-y border-white/8 bg-white/[0.02] px-6 py-24 sm:px-8 lg:px-12">
+      <section id="pricing" className="scroll-mt-28 border-y border-white/8 bg-white/[0.02] px-6 py-24 sm:px-8 lg:px-12">
         <div className="mx-auto max-w-[1380px]">
           <SectionIntro
             eyebrow="Pricing"
@@ -287,18 +318,18 @@ export function LandingPage() {
 
           <div className="mt-14 grid gap-6 lg:grid-cols-2">
             <PricingCard
-              cta="Try Free"
+              cta="Try for free"
               description="For angels exploring a faster first pass."
               features={[
                 "3 deck analyses",
                 "Basic diligence report",
-                "No account needed",
+                "Sign in to get started",
               ]}
               price="Free"
               title="Free"
             />
             <PricingCard
-              cta="Go Pro"
+              cta="Get Pro"
               description="For active angels and fund analysts reviewing deals weekly."
               features={[
                 "Unlimited analyses",
@@ -319,13 +350,20 @@ export function LandingPage() {
       <footer className="px-6 py-10 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-[1380px] flex-col gap-5 border-t border-white/8 pt-8 text-sm text-white/45 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p>Built for the Codex Creator Challenge</p>
-            <p className="mt-1">Copyright InvestoDash 2026</p>
+            <p className="font-medium text-white/70">InvestoDash</p>
+            <p className="mt-1">AI diligence and deal flow for angels and funds.</p>
+            <p className="mt-2 text-white/40">© {new Date().getFullYear()} InvestoDash</p>
           </div>
-          <div className="flex gap-6">
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Contact</a>
+          <div className="flex flex-wrap gap-6">
+            <Link className="hover:text-white/80" href="/login">
+              Sign in
+            </Link>
+            <Link className="hover:text-white/80" href="#pricing">
+              Pricing
+            </Link>
+            <a className="hover:text-white/80" href="mailto:support@investodash.com">
+              Contact
+            </a>
           </div>
         </div>
       </footer>
