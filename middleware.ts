@@ -53,6 +53,11 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    /*
+     * Skip API routes and everything under `/_next/*` (chunks, CSS, HMR, image optimizer).
+     * If middleware runs on `/_next/static/...`, the Supabase client can break chunk responses
+     * and the browser reports 404 for main-app.js, page.js, layout.css, etc.
+     */
+    "/((?!api|_next|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

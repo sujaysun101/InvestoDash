@@ -23,15 +23,18 @@ export function PostLoginResolver() {
         return;
       }
 
+      // Use getUser() to verify the token with Supabase's server — getSession()
+      // reads from storage only and can return stale/expired tokens that the
+      // server will reject, causing a redirect loop.
       const {
-        data: { session },
-      } = await supabase.auth.getSession();
+        data: { user },
+      } = await supabase.auth.getUser();
 
       if (!active) {
         return;
       }
 
-      if (!session?.user) {
+      if (!user) {
         setMessage("No active session found. Redirecting to sign in...");
         window.location.replace("/login");
         return;
@@ -42,7 +45,7 @@ export function PostLoginResolver() {
       const { data: thesis } = await supabase
         .from("thesis")
         .select("user_id")
-        .eq("user_id", session.user.id)
+        .eq("user_id", user.id)
         .maybeSingle();
 
       if (!active) {

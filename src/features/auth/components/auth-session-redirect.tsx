@@ -18,16 +18,20 @@ export function AuthSessionRedirect({
 
     let active = true;
 
-    void supabase.auth.getSession().then(({ data }) => {
-      if (active && data.session) {
+    // Use getUser() (not getSession()) — it verifies the token with Supabase's
+    // server, so stale/expired JWTs do not trigger a false redirect.
+    void supabase.auth.getUser().then(({ data }) => {
+      if (active && data.user) {
         window.location.replace(redirectTo);
       }
     });
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
+    } = supabase.auth.onAuthStateChange((event, session) => {
+      // Only react to a genuine sign-in, not a passive session restore that
+      // may carry a stale token.
+      if (event === "SIGNED_IN" && session) {
         window.location.replace(redirectTo);
       }
     });
