@@ -1,3 +1,4 @@
+import Link from "next/link";
 import {
   ArrowRight,
   Brain,
@@ -16,10 +17,6 @@ import {
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? "https://investodash.com";
-const TEST_APP_URL =
-  process.env.NEXT_PUBLIC_TEST_APP_URL ?? "https://test.investodash.com";
 
 const featureCards = [
   {
@@ -69,7 +66,10 @@ const redFlags = [
 export function LandingPage() {
   return (
     <main className="overflow-hidden bg-[#0f1117] text-white">
-      <div className="absolute inset-x-0 top-0 -z-10 h-[720px] bg-[radial-gradient(circle_at_20%_10%,rgba(37,99,235,0.26),transparent_35%),radial-gradient(circle_at_80%_18%,rgba(15,196,142,0.16),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_45%)]" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-[720px] bg-[radial-gradient(circle_at_20%_10%,rgba(37,99,235,0.26),transparent_35%),radial-gradient(circle_at_80%_18%,rgba(15,196,142,0.16),transparent_25%),linear-gradient(180deg,rgba(255,255,255,0.03),transparent_45%)]"
+      />
 
       <section className="relative border-b border-white/8 px-6 pb-20 pt-6 sm:px-8 lg:px-12">
         <div className="mx-auto flex max-w-[1380px] flex-col gap-12">
@@ -104,31 +104,14 @@ export function LandingPage() {
                 place.
               </p>
 
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <div className="relative z-10 mt-8">
                 <Button asChild className="h-12 rounded-full bg-blue-600 px-6 text-white hover:bg-blue-500">
-                  <a href={`${APP_URL}/login`}>
+                  <Link href="/login">
                     Try for Free
                     <ArrowRight />
-                  </a>
-                </Button>
-                <Button
-                  asChild
-                  className="h-12 rounded-full border-white/15 bg-white/0 px-6 text-white hover:bg-white/6"
-                  variant="outline"
-                >
-                  <a href={`${TEST_APP_URL}/login`}>Open Test Environment</a>
+                  </Link>
                 </Button>
               </div>
-              <p className="mt-3 text-xs text-white/55">
-                Regular:{" "}
-                <a className="underline underline-offset-4" href={`${APP_URL}/login`}>
-                  {APP_URL}/login
-                </a>{" "}
-                | Test:{" "}
-                <a className="underline underline-offset-4" href={`${TEST_APP_URL}/login`}>
-                  {TEST_APP_URL}/login
-                </a>
-              </p>
 
               <div className="mt-10 grid max-w-xl grid-cols-3 gap-4 border-t border-white/8 pt-6">
                 <Metric value="<60s" label="to generate a structured memo" />
@@ -362,7 +345,10 @@ function Metric({ value, label }: { value: string; label: string }) {
 function HeroMockup() {
   return (
     <div className="relative">
-      <div className="absolute inset-0 -z-10 rounded-[40px] bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.28),transparent_48%)] blur-3xl" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 rounded-[40px] bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.28),transparent_48%)] blur-3xl"
+      />
       <div className="overflow-hidden rounded-[34px] border border-white/10 bg-[linear-gradient(180deg,rgba(10,14,22,0.98),rgba(15,22,34,0.98))] shadow-[0_30px_120px_rgba(0,0,0,0.45)]">
         <div className="flex items-center justify-between border-b border-white/8 px-5 py-4">
           <div className="flex items-center gap-3">
@@ -656,7 +642,7 @@ function PricingCard({
         }`}
         variant={highlighted ? "default" : "outline"}
       >
-        <a href={`${APP_URL}/login`}>{cta}</a>
+        <Link href="/login">{cta}</Link>
       </Button>
     </div>
   );
