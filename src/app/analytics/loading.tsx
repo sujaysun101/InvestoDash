@@ -18,6 +18,3 @@ export default function AnalyticsLoading() {
         <Skeleton className="h-72 rounded-2xl" />
         <Skeleton className="h-72 rounded-2xl" />
       </div>
-    </div>
-  );
-}

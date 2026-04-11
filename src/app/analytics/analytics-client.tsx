@@ -669,13 +669,4 @@ export function AnalyticsClient({ deals }: { deals: Deal[] }) {
       {/* Empty state */}
       {deals.length === 0 ? (
         <Card className="rounded-2xl border-dashed">
-          <CardContent className="flex flex-col items-center gap-4 py-16 text-muted-foreground">
-            <BarChart2 className="h-10 w-10 opacity-30" />
-            <p className="text-sm font-medium">No deals yet</p>
-            <p className="text-xs">Add your first deal from the Pipeline to see analytics.</p>
-          </CardContent>
-        </Card>
-      ) : null}
-    </div>
-  );
-}
+          <CardContent className="flex flex-col items-center gap-4 py-16

@@ -1,6 +1,5 @@
 import { redirect } from "next/navigation";
 
-import { AppShell } from "@/components/app-shell";
 import {
   Card,
   CardContent,
@@ -9,20 +8,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ThesisOnboardingForm } from "@/features/auth/components/thesis-onboarding-form";
-import { getCurrentUser } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { SECTORS } from "@/lib/constants";
-import { loadDashboardData } from "@/lib/data";
-import { ThesisProfile } from "@/lib/types";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { ThesisProfile } from "@/lib/types";
 
 export default async function OnboardingPage() {
-  const user = await getCurrentUser();
+  const user = await requireUser();
 
   if (!user) {
     redirect("/login");
   }
-
-  const { thesis, usage } = await loadDashboardData();
 
   const supabase = createServerSupabaseClient();
   let initialThesis: ThesisProfile | null = null;
@@ -48,21 +44,18 @@ export default async function OnboardingPage() {
   }
 
   return (
-    <AppShell thesis={thesis} usage={usage} userEmail={user.email ?? null}>
-      <div className="mx-auto w-full max-w-3xl">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-2xl">Investment thesis</CardTitle>
-            <CardDescription>
-              Your thesis shapes thesis-fit scoring for every deal you analyze. Keep it
-              current as your strategy evolves.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ThesisOnboardingForm sectors={[...SECTORS]} initialThesis={initialThesis} />
-          </CardContent>
-        </Card>
-      </div>
-    </AppShell>
+    <main className="mx-auto flex min-h-screen w-full max-w-4xl items-center px-6 py-16">
+      <Card className="w-full">
+        <CardHeader>
+          <CardTitle className="text-3xl">Complete your investment thesis</CardTitle>
+          <CardDescription>
+            This profile shapes thesis-fit scoring for every new deal.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ThesisOnboardingForm sectors={[...SECTORS]} initialThesis={initialThesis} />
+        </CardContent>
+      </Card>
+    </main>
   );
 }

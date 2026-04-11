@@ -15,8 +15,6 @@ const requestSchema = z.object({
   dealId: z.string(),
   companyName: z.string(),
   founderName: z.string().optional().default(""),
-  dealStage: z.string().optional().default("Unknown"),
-  websiteUrl: z.string().optional().default(""),
   extractedText: z.string().min(50),
   thesis: z.custom<ThesisProfile>(),
 });
@@ -40,23 +38,11 @@ export async function POST(request: Request) {
       ? await runAnthropicAnalysis(body.extractedText)
       : buildAnalysisFromHeuristics(body.companyName, body.extractedText);
 
+  const thesisFit = buildThesisFit(body.thesis, analysis);
   const webContext = await buildWebResearchSummary(
     body.companyName,
     body.founderName,
   );
-
-  // Build company context string for geo + sector fuzzy matching
-  const companyContext = [
-    body.companyName,
-    body.founderName,
-    body.websiteUrl,
-    body.extractedText.slice(0, 1000),
-    webContext,
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const thesisFit = buildThesisFit(body.thesis, analysis, body.dealStage, companyContext);
 
   const fullAnalysis = {
     ...analysis,

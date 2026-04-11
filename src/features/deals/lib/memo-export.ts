@@ -82,8 +82,4 @@ export function buildMemoHtml(deal: Deal, memo: string): string {
     missingSection +
     `<h2>Investor Notes${cl}h2>` +
     `<div class="memo-box">${memo || "(No notes added)"}${cl}div>` +
-    "<script>window.onload=()=>window.print()" + cl + "script>" +
-    cl + "body>" +
-    cl + "html>"
-  );
-}
+    "<script>window.onloa

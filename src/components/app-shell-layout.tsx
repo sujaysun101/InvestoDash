@@ -323,17 +323,9 @@ function SidebarInner({
         <CardContent className="flex flex-col gap-3 pt-6">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">Thesis profile</span>
-            <div className="flex items-center gap-2">
-              <Badge variant={thesis ? "secondary" : "outline"}>
-                {thesis ? "Active" : "Needs setup"}
-              </Badge>
-              <Link
-                href="/onboarding"
-                className="text-xs text-primary underline-offset-2 hover:underline"
-              >
-                Edit
-              </Link>
-            </div>
+            <Badge variant={thesis ? "secondary" : "outline"}>
+              {thesis ? "Active" : "Needs setup"}
+            </Badge>
           </div>
           {thesis ? (
             <div className="flex flex-col gap-2 text-sm text-muted-foreground">
@@ -342,12 +334,11 @@ function SidebarInner({
                 Stage: {thesis.target_stage.join(", ")} | Check:{" "}
                 {thesis.check_size_range}
               </p>
-              <p>Geo: {thesis.geography_preference}
-              </p>
+              <p>Geo: {thesis.geography_preference}</p>
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">
-              Set up your thesis to unlock thesis-fit scoring on every deal.
+              Collect thesis details right after first login to unlock fit scoring.
             </p>
           )}
         </CardContent>

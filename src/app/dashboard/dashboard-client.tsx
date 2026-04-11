@@ -247,15 +247,4 @@ export function DashboardClient({ deals }: { deals: Deal[] }) {
                   >
                     Cancel
                   </Button>
-                  <Button type="submit" disabled={isSubmitting} className="min-w-28">
-                    {isSubmitting ? "Adding..." : "Add deal"}
-                  </Button>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
-        </div>
-      ) : null}
-    </>
-  );
-}
+                  <Button type="submit" disabled={isSubmitting} c
