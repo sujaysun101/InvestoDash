@@ -19,8 +19,6 @@ export default async function LoginPage() {
     redirect("/auth/post-login");
   }
 
-  const showDemoLogin = process.env.ENABLE_INTERNAL_DEMO === "true";
-
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-6 py-16">
       <AuthSessionRedirect />
@@ -33,7 +31,7 @@ export default async function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          <AuthForm showDemoLogin={showDemoLogin} />
+          <AuthForm />
           <p className="text-sm text-muted-foreground">
             After your first login, you&apos;ll be prompted to complete your investment
             thesis profile.

@@ -14,17 +14,14 @@ export function RunAnalysisCard({
   initialAnalysis,
   parsedDeckText,
   thesis,
-  usageRemaining,
 }: {
   deal: Deal;
   initialAnalysis: DealAnalysis | null;
   parsedDeckText: string;
   thesis: ThesisProfile | null;
-  usageRemaining: number;
 }) {
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<DealAnalysis | null>(initialAnalysis);
-  const [showPaywall, setShowPaywall] = useState(false);
 
   const disabledReason = useMemo(() => {
     if (!parsedDeckText) return "Upload a deck first.";
@@ -35,11 +32,6 @@ export function RunAnalysisCard({
   async function runAnalysis() {
     if (!thesis || !parsedDeckText) {
       toast.error(disabledReason ?? "Deck and thesis are required.");
-      return;
-    }
-
-    if (usageRemaining <= 0) {
-      setShowPaywall(true);
       return;
     }
 
@@ -97,26 +89,6 @@ export function RunAnalysisCard({
           </div>
         </CardContent>
       </Card>
-
-      {showPaywall ? (
-        <Card className="border-primary/30 bg-primary/8">
-          <CardContent className="flex flex-col gap-3 pt-6 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <p className="font-medium">
-                You&apos;ve used your 3 free analyses.
-              </p>
-              <p className="text-sm text-muted-foreground">
-                Subscribe to unlock unlimited deal flow — $49/month.
-              </p>
-            </div>
-            <Button onClick={() => setShowPaywall(false)} variant="outline">
-              Dismiss
-            </Button>
-          </CardContent>
-        </Card>
-      ) : null}
-
-      {analysis ? <AnalysisPanel analysis={analysis} /> : null}
     </div>
   );
 }

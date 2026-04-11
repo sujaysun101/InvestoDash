@@ -20,3 +20,31 @@ export async function parseDeckPdf(file: File) {
 
   return text.trim();
 }
+
+/**
+ * Client-side extraction for previews (PDF + plain text).
+ * Images, Office, and video are analyzed on the server via Run AI / upload flow.
+ */
+export async function parseDeckFileClient(file: File): Promise<string> {
+  const name = file.name.toLowerCase();
+
+  if (name.endsWith(".pdf") || file.type === "application/pdf") {
+    return parseDeckPdf(file);
+  }
+
+  if (
+    /\.(txt|md|csv|json|html|htm|xml|log|yaml|yml)$/i.test(name) ||
+    file.type.startsWith("text/") ||
+    file.type === "application/json"
+  ) {
+    return (await file.text()).trim();
+  }
+
+  if (name.endsWith(".svg") || file.type === "image/svg+xml") {
+    return (await file.text()).trim();
+  }
+
+  throw new Error(
+    "This file type is parsed on the server. Use Upload Deck or Run AI — the API accepts PDF, DOCX, or PPTX files.",
+  );
+}
