@@ -45,4 +45,6 @@ export async function parseDeckFileClient(file: File): Promise<string> {
   }
 
   throw new Error(
-    "This file type is parsed on the server. Use Upload Deck or Run AI — the API accepts present
+    "This file type is parsed on the server. Use Upload Deck or Run AI — the API accepts PDF, DOCX, or PPTX files.",
+  );
+}

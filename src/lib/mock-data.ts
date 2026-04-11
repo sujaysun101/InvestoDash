@@ -246,3 +246,7 @@ export const mockDeals: Deal[] = [
     status: "Invested",
     notes_html: "Portfolio company. Great progress post-check.",
     usage_remaining: 1,
+    analysis: null,
+    activity: [],
+  },
+];

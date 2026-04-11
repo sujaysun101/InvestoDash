@@ -364,4 +364,8 @@ export async function POST(req: Request) {
   });
 
   if (ANALYSIS_PAYWALL_ENABLED) {
-    await supabas
+    await supabase.rpc("increment_analysis_usage");
+  }
+
+  return NextResponse.json({ success: true });
+}

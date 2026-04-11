@@ -139,4 +139,6 @@ export async function prepareDeckMaterial(file: File): Promise<DeckMaterial> {
 
   throw new Error(
     `Could not extract content from "${filename}". ` +
-      "Try PD
+      "Try PDF, DOCX, or PPTX files.",
+  );
+}

@@ -19,4 +19,6 @@ export default async function AnalyticsPage() {
   return (
     <AppShell thesis={thesis} usage={usage} userEmail={user.email ?? null}>
       <AnalyticsClient deals={deals as Deal[]} />
-  
+    </AppShell>
+  );
+}
