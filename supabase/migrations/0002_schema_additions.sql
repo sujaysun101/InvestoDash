@@ -81,4 +81,6 @@ CREATE POLICY IF NOT EXISTS "Users can manage files for their deals"
   );
 
 ALTER TABLE usage_counters ENABLE ROW LEVEL SECURITY;
-CREATE POLICY IF NOT EXISTS "Users can m
+CREATE POLICY IF NOT EXISTS "Users can manage their own usage"
+  ON usage_counters FOR ALL
+  USING (auth.uid() = user_id);

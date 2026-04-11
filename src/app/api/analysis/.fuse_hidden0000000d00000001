@@ -82,7 +82,8 @@ export async function POST(request: Request) {
       red_flags: fullAnalysis.red_flags,
       missing_info: fullAnalysis.missing_info,
       recommendation: fullAnalysis.recommendation.verdict,
-      recommendation_rationale: fullAnalysis.recommendation.rationale,
+      recommendation
+_rationale: fullAnalysis.recommendation.rationale,
       thesis_fit_score: fullAnalysis.thesis_fit_score,
       thesis_fit_reason: fullAnalysis.thesis_fit_reason,
       web_context: fullAnalysis.web_context,

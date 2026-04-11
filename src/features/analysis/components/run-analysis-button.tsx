@@ -88,4 +88,7 @@ export function RunAnalysisCard({
             {analysis ? <DownloadReportButton analysis={analysis} deal={deal} /> : null}
           </div>
         </CardContent>
-      <
+      </Card>
+    </div>
+  );
+}
