@@ -36,7 +36,7 @@ export function DealRoom({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-3">
           <Button asChild className="w-fit" variant="ghost">
-            <Link href="/">
+            <Link href="/pipeline">
               <ArrowLeft />
               Back to pipeline
             </Link>
@@ -116,7 +116,8 @@ export function DealRoom({
             <CardHeader>
               <CardTitle>Deck upload</CardTitle>
               <CardDescription>
-                Pitch decks are stored in Supabase Storage and parsed client-side.
+                PDF and PPTX decks are stored in Supabase Storage and parsed
+                client-side.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
