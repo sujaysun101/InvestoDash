@@ -6,6 +6,18 @@ import { PIPELINE_STAGES } from "@/lib/constants";
 import { Deal } from "@/lib/types";
 
 export function DealBoard({ deals }: { deals: Deal[] }) {
+  if (deals.length === 0) {
+    return (
+      <div className="rounded-2xl border border-dashed border-border/60 bg-secondary/15 px-6 py-14 text-center">
+        <p className="text-sm font-medium text-foreground">No deals yet</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Connect Supabase and seed your pipeline, or use internal demo mode to load
+          sample deals.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="grid gap-5 xl:grid-cols-6">
       {PIPELINE_STAGES.map((stage) => {
