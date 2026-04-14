@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
@@ -36,8 +37,6 @@ export async function GET(request: NextRequest) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    // Code exchange failed (expired code, PKCE verifier mismatch, etc.).
-    // Send the user back to login rather than forwarding with no session.
     return NextResponse.redirect(new URL("/login?error=auth_callback", origin));
   }
 

@@ -27,7 +27,7 @@ export default async function DealPage({
 
   return (
     <AppShell thesis={thesis} usage={usage} userEmail={user.email ?? null}>
-      <DealRoom deal={deal} thesis={thesis} />
+      <DealRoom deal={deal} thesis={thesis} usage={usage} />
     </AppShell>
   );
 }

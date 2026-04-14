@@ -7,6 +7,7 @@ import {
 } from "@/features/analysis/server/anthropic";
 import { buildThesisFit } from "@/features/analysis/server/thesis-fit";
 import { buildWebResearchSummary } from "@/features/analysis/server/web-research";
+import { ANALYSIS_PAYWALL_ENABLED } from "@/lib/constants";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ThesisProfile } from "@/lib/types";
 
@@ -14,6 +15,8 @@ const requestSchema = z.object({
   dealId: z.string(),
   companyName: z.string(),
   founderName: z.string().optional().default(""),
+  dealStage: z.string().optional().default("Unknown"),
+  websiteUrl: z.string().optional().default(""),
   extractedText: z.string().min(50),
   thesis: z.custom<ThesisProfile>(),
 });
@@ -37,11 +40,23 @@ export async function POST(request: Request) {
       ? await runAnthropicAnalysis(body.extractedText)
       : buildAnalysisFromHeuristics(body.companyName, body.extractedText);
 
-  const thesisFit = buildThesisFit(body.thesis, analysis);
   const webContext = await buildWebResearchSummary(
     body.companyName,
     body.founderName,
   );
+
+  // Build company context string for geo + sector fuzzy matching
+  const companyContext = [
+    body.companyName,
+    body.founderName,
+    body.websiteUrl,
+    body.extractedText.slice(0, 1000),
+    webContext,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const thesisFit = buildThesisFit(body.thesis, analysis, body.dealStage, companyContext);
 
   const fullAnalysis = {
     ...analysis,
@@ -74,7 +89,9 @@ export async function POST(request: Request) {
       raw_json: fullAnalysis,
     });
 
-    await supabase.rpc("increment_analysis_usage");
+    if (ANALYSIS_PAYWALL_ENABLED) {
+      await supabase.rpc("increment_analysis_usage");
+    }
   }
 
   return NextResponse.json(fullAnalysis);

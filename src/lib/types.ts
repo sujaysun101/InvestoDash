@@ -46,6 +46,12 @@ export interface ActivityItem {
   timestamp: string;
 }
 
+export type AnalysisWorkflowStatus =
+  | "pending"
+  | "analyzing"
+  | "complete"
+  | "error";
+
 export interface Deal {
   id: string;
   company_name: string;
@@ -59,6 +65,10 @@ export interface Deal {
   usage_remaining: number;
   activity: ActivityItem[];
   analysis: DealAnalysis | null;
+  /** Denormalized fit for filters / badges when analysis object is sparse */
+  fit_score?: number | null;
+  memo?: string;
+  analysis_status?: AnalysisWorkflowStatus;
 }
 
 export interface UsageCounter {

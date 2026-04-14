@@ -11,8 +11,8 @@ export const mockThesis: ThesisProfile = {
 
 export const mockUsage: UsageCounter = {
   used: 2,
-  limit: 3,
-  remaining: 1,
+  limit: 999_999,
+  remaining: 999_999,
 };
 
 export const mockDeals: Deal[] = [
@@ -246,14 +246,7 @@ export const mockDeals: Deal[] = [
     status: "Invested",
     notes_html: "Portfolio company. Great progress post-check.",
     usage_remaining: 1,
-    activity: [
-      {
-        id: "p1",
-        timestamp: "2026-02-12 09:00",
-        title: "Investment closed",
-        note: "Completed allocation with high conviction on team and distribution.",
-      },
-    ],
     analysis: null,
+    activity: [],
   },
 ];
