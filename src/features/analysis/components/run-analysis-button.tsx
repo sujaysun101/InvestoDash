@@ -5,7 +5,6 @@ import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { AnalysisPanel } from "@/features/analysis/components/analysis-panel";
 import { DownloadReportButton } from "@/features/analysis/components/download-report-button";
 import { Deal, DealAnalysis, ThesisProfile } from "@/lib/types";
 
