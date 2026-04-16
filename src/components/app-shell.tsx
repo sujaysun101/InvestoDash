@@ -36,7 +36,7 @@ export function AppShell({
 
             <nav className="flex flex-col gap-2">
               <Button asChild className="justify-start" variant="ghost">
-                <Link href="/compare">Pipeline</Link>
+                <Link href="/">Pipeline</Link>
               </Button>
               <Button asChild className="justify-start" variant="ghost">
                 <Link href="/compare">Compare Deals</Link>
