@@ -36,7 +36,7 @@ export function DealRoom({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-3">
           <Button asChild className="w-fit" variant="ghost">
-            <Link href="/">
+            <Link href="/pipeline">
               <ArrowLeft />
               Back to pipeline
             </Link>
@@ -123,7 +123,9 @@ export function DealRoom({
               <DeckUpload dealId={deal.id} onDeckParsed={setParsedDeckText} />
               {parsedDeckText ? (
                 <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4 text-sm text-muted-foreground">
-                  {parsedDeckText.slice(0, 320)}...
+                  {parsedDeckText.length > 320
+                    ? `${parsedDeckText.slice(0, 320)}…`
+                    : parsedDeckText}
                 </div>
               ) : null}
             </CardContent>

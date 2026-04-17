@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -62,6 +63,35 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Sector", getter: (deal) => deal.sector },
   ];
 
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+        <Card>
+          <CardContent className="py-12 text-center text-sm text-muted-foreground">
+            <p>No deals in your workspace yet.</p>
+            <p className="mt-3">
+              Add deals from the pipeline or run a demo session, then return here
+              to compare scores.
+            </p>
+            <Button asChild className="mt-6" variant="secondary">
+              <Link href="/pipeline">Go to pipeline</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const needsMoreSelection = selectedDeals.length < 2;
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
@@ -80,41 +110,55 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
             Compare diligence scores, recommendation, risk, and thesis fit.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-wrap gap-3">
-          {deals.map((deal) => (
-            <Button
-              key={deal.id}
-              onClick={() => toggleDeal(deal.id)}
-              variant={selectedIds.includes(deal.id) ? "secondary" : "outline"}
-            >
-              {deal.company_name}
-            </Button>
-          ))}
+        <CardContent className="flex flex-col gap-4">
+          <div className="flex flex-wrap gap-3">
+            {deals.map((deal) => (
+              <Button
+                key={deal.id}
+                onClick={() => toggleDeal(deal.id)}
+                variant={selectedIds.includes(deal.id) ? "secondary" : "outline"}
+              >
+                {deal.company_name}
+              </Button>
+            ))}
+          </div>
+          {needsMoreSelection ? (
+            <p className="text-sm text-muted-foreground">
+              Select at least two deals to populate the comparison table.
+            </p>
+          ) : null}
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Metric</TableHead>
-                {selectedDeals.map((deal) => (
-                  <TableHead key={deal.id}>{deal.company_name}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map(({ label, getter }) => (
-                <TableRow key={label}>
-                  <TableCell className="font-medium">{label}</TableCell>
+          {needsMoreSelection ? (
+            <div className="rounded-2xl border border-dashed border-border/60 px-6 py-12 text-center text-sm text-muted-foreground">
+              Choose two or more deals above to see side-by-side diligence
+              metrics.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Metric</TableHead>
                   {selectedDeals.map((deal) => (
-                    <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    <TableHead key={deal.id}>{deal.company_name}</TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {rows.map(({ label, getter }) => (
+                  <TableRow key={label}>
+                    <TableCell className="font-medium">{label}</TableCell>
+                    {selectedDeals.map((deal) => (
+                      <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
