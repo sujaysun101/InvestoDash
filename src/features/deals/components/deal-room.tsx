@@ -116,7 +116,8 @@ export function DealRoom({
             <CardHeader>
               <CardTitle>Deck upload</CardTitle>
               <CardDescription>
-                Pitch decks are stored in Supabase Storage and parsed client-side.
+                Pitch decks (PDF or PPTX) are stored in Supabase Storage and
+                parsed client-side.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
