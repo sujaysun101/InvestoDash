@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -7,6 +8,10 @@ import {
 } from "@/features/analysis/server/anthropic";
 import { buildThesisFit } from "@/features/analysis/server/thesis-fit";
 import { buildWebResearchSummary } from "@/features/analysis/server/web-research";
+import {
+  DEMO_COOKIE_NAME,
+  hasDemoCookie,
+} from "@/lib/demo-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ThesisProfile } from "@/lib/types";
 
@@ -19,14 +24,22 @@ const requestSchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const cookieStore = cookies();
+  const isDemoSession = hasDemoCookie(
+    cookieStore.get(DEMO_COOKIE_NAME)?.value,
+  );
+
   const supabase = createServerSupabaseClient();
+
+  let supabaseUserId: string | null = null;
 
   if (supabase) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
+    supabaseUserId = user?.id ?? null;
 
-    if (!user) {
+    if (!isDemoSession && !supabaseUserId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   }
@@ -50,7 +63,7 @@ export async function POST(request: Request) {
     analyzed_at: new Date().toISOString(),
   };
 
-  if (supabase) {
+  if (supabase && supabaseUserId) {
     await supabase.from("deal_analysis").upsert({
       deal_id: body.dealId,
       executive_summary: fullAnalysis.executive_summary,
