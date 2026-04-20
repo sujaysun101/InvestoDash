@@ -62,6 +62,27 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Sector", getter: (deal) => deal.sector },
   ];
 
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+        <Card>
+          <CardContent className="py-12 text-center text-sm text-muted-foreground">
+            No deals in your pipeline yet. Add deals from your CRM or seed data,
+            then return here to compare diligence scores.
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
@@ -95,26 +116,33 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
 
       <Card>
         <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Metric</TableHead>
-                {selectedDeals.map((deal) => (
-                  <TableHead key={deal.id}>{deal.company_name}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map(({ label, getter }) => (
-                <TableRow key={label}>
-                  <TableCell className="font-medium">{label}</TableCell>
+          {selectedDeals.length < 2 ? (
+            <div className="rounded-2xl border border-dashed border-border/60 px-4 py-10 text-center text-sm text-muted-foreground">
+              Select at least two deals above to see the comparison table. You
+              can compare up to four at once.
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Metric</TableHead>
                   {selectedDeals.map((deal) => (
-                    <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    <TableHead key={deal.id}>{deal.company_name}</TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {rows.map(({ label, getter }) => (
+                  <TableRow key={label}>
+                    <TableCell className="font-medium">{label}</TableCell>
+                    {selectedDeals.map((deal) => (
+                      <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>

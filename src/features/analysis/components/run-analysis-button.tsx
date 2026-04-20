@@ -60,7 +60,20 @@ export function RunAnalysisCard({
       });
 
       if (!response.ok) {
-        throw new Error("Analysis request failed.");
+        let message = "Analysis request failed.";
+        try {
+          const errBody = (await response.json()) as { error?: string };
+          if (errBody.error) {
+            message = errBody.error;
+          }
+        } catch {
+          // ignore JSON parse errors
+        }
+        if (response.status === 401) {
+          message =
+            "Sign in or use demo access to run analysis. Your session may have expired.";
+        }
+        throw new Error(message);
       }
 
       const json = (await response.json()) as DealAnalysis;
