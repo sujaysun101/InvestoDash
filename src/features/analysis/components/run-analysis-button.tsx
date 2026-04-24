@@ -59,11 +59,19 @@ export function RunAnalysisCard({
         }),
       });
 
+      const payload = (await response.json()) as
+        | DealAnalysis
+        | { error?: string };
+
       if (!response.ok) {
-        throw new Error("Analysis request failed.");
+        const apiError =
+          "error" in payload && typeof payload.error === "string"
+            ? payload.error
+            : "Analysis request failed.";
+        throw new Error(apiError);
       }
 
-      const json = (await response.json()) as DealAnalysis;
+      const json = payload as DealAnalysis;
       setAnalysis(json);
       toast.success("Analysis complete.");
     } catch (error) {
