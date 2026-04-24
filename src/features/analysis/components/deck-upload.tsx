@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
-import { parseDeckPdf } from "@/features/analysis/lib/deck-parser";
+import { parseDeckFile } from "@/features/analysis/lib/deck-parser";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 export function DeckUpload({
@@ -22,7 +22,7 @@ export function DeckUpload({
 
     setUploading(true);
     try {
-      const parsedText = await parseDeckPdf(file);
+      const parsedText = await parseDeckFile(file);
       onDeckParsed(parsedText);
 
       const supabase = createBrowserSupabaseClient();
@@ -33,7 +33,11 @@ export function DeckUpload({
         });
       }
 
-      toast.success("Deck uploaded and parsed.");
+      toast.success(
+        file.name.toLowerCase().endsWith(".pptx")
+          ? "PPTX uploaded and text extracted."
+          : "Deck uploaded and parsed.",
+      );
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Could not parse deck.",
@@ -47,9 +51,9 @@ export function DeckUpload({
     <div className="flex flex-wrap items-center gap-3">
       <Button asChild variant="outline">
         <label className="cursor-pointer">
-          {uploading ? "Parsing deck..." : "Upload PDF deck"}
+          {uploading ? "Parsing deck..." : "Upload PDF or PPTX"}
           <input
-            accept="application/pdf"
+            accept="application/pdf,.pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation"
             className="hidden"
             onChange={handleFileChange}
             type="file"
@@ -57,7 +61,7 @@ export function DeckUpload({
         </label>
       </Button>
       <p className="text-sm text-muted-foreground">
-        PDF extraction runs client-side with pdf.js before analysis.
+        PDFs use pdf.js; PPTX uses on-device text from slide XML before analysis.
       </p>
     </div>
   );
