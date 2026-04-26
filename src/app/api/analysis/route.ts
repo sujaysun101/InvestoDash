@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -7,6 +8,11 @@ import {
 } from "@/features/analysis/server/anthropic";
 import { buildThesisFit } from "@/features/analysis/server/thesis-fit";
 import { buildWebResearchSummary } from "@/features/analysis/server/web-research";
+import {
+  DEMO_COOKIE_NAME,
+  hasDemoCookie,
+  isInternalDemoEnabled,
+} from "@/lib/demo-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ThesisProfile } from "@/lib/types";
 
@@ -26,12 +32,30 @@ export async function POST(request: Request) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
+    const demoSession =
+      isInternalDemoEnabled() &&
+      hasDemoCookie(cookies().get(DEMO_COOKIE_NAME)?.value);
+
+    if (!user && !demoSession) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
   }
 
-  const body = requestSchema.parse(await request.json());
+  let jsonBody: unknown;
+  try {
+    jsonBody = await request.json();
+  } catch {
+    return NextResponse.json({ error: "Invalid JSON body." }, { status: 400 });
+  }
+
+  const parsed = requestSchema.safeParse(jsonBody);
+  if (!parsed.success) {
+    const message =
+      parsed.error.issues[0]?.message ?? "Invalid analysis request.";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
+
+  const body = parsed.data;
   const analysis =
     process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_MODEL
       ? await runAnthropicAnalysis(body.extractedText)

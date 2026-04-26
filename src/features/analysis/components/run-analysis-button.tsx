@@ -59,11 +59,17 @@ export function RunAnalysisCard({
         }),
       });
 
-      if (!response.ok) {
-        throw new Error("Analysis request failed.");
-      }
+      const json = (await response.json()) as DealAnalysis & {
+        error?: string;
+      };
 
-      const json = (await response.json()) as DealAnalysis;
+      if (!response.ok) {
+        throw new Error(
+          typeof json.error === "string" && json.error
+            ? json.error
+            : "Analysis request failed.",
+        );
+      }
       setAnalysis(json);
       toast.success("Analysis complete.");
     } catch (error) {
