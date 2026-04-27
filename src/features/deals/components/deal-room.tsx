@@ -116,14 +116,17 @@ export function DealRoom({
             <CardHeader>
               <CardTitle>Deck upload</CardTitle>
               <CardDescription>
-                Pitch decks are stored in Supabase Storage and parsed client-side.
+                PDF and PPTX decks are parsed in the browser; PDFs can also sync to
+                Supabase Storage when configured.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
               <DeckUpload dealId={deal.id} onDeckParsed={setParsedDeckText} />
               {parsedDeckText ? (
                 <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4 text-sm text-muted-foreground">
-                  {parsedDeckText.slice(0, 320)}...
+                  {parsedDeckText.length > 320
+                    ? `${parsedDeckText.slice(0, 320)}…`
+                    : parsedDeckText}
                 </div>
               ) : null}
             </CardContent>

@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -7,6 +8,7 @@ import {
 } from "@/features/analysis/server/anthropic";
 import { buildThesisFit } from "@/features/analysis/server/thesis-fit";
 import { buildWebResearchSummary } from "@/features/analysis/server/web-research";
+import { DEMO_COOKIE_NAME, hasDemoCookie } from "@/lib/demo-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ThesisProfile } from "@/lib/types";
 
@@ -20,18 +22,52 @@ const requestSchema = z.object({
 
 export async function POST(request: Request) {
   const supabase = createServerSupabaseClient();
+  const demoSession = hasDemoCookie(cookies().get(DEMO_COOKIE_NAME)?.value);
+
+  let userId: string | null = null;
 
   if (supabase) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
 
-    if (!user) {
+    if (user) {
+      userId = user.id;
+    } else if (!demoSession) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
+  } else if (!demoSession) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const body = requestSchema.parse(await request.json());
+  let json: unknown;
+  try {
+    json = await request.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid JSON body.", code: "INVALID_JSON" },
+      { status: 400 },
+    );
+  }
+
+  const parsed = requestSchema.safeParse(json);
+  if (!parsed.success) {
+    const first = parsed.error.flatten();
+    const message =
+      first.fieldErrors.extractedText?.[0] ??
+      Object.values(first.fieldErrors).flat()[0] ??
+      "Invalid request.";
+    return NextResponse.json(
+      {
+        error: message,
+        code: "VALIDATION_ERROR",
+        details: first.fieldErrors,
+      },
+      { status: 400 },
+    );
+  }
+
+  const body = parsed.data;
   const analysis =
     process.env.ANTHROPIC_API_KEY && process.env.ANTHROPIC_MODEL
       ? await runAnthropicAnalysis(body.extractedText)
@@ -50,7 +86,7 @@ export async function POST(request: Request) {
     analyzed_at: new Date().toISOString(),
   };
 
-  if (supabase) {
+  if (supabase && userId) {
     await supabase.from("deal_analysis").upsert({
       deal_id: body.dealId,
       executive_summary: fullAnalysis.executive_summary,
