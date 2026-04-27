@@ -59,11 +59,22 @@ export function RunAnalysisCard({
         }),
       });
 
+      const payload = (await response.json()) as unknown;
+
       if (!response.ok) {
-        throw new Error("Analysis request failed.");
+        const message =
+          typeof payload === "object" &&
+          payload !== null &&
+          "error" in payload &&
+          typeof (payload as { error: unknown }).error === "string"
+            ? (payload as { error: string }).error
+            : response.status === 401
+              ? "Sign in again to run analysis."
+              : "Analysis request failed.";
+        throw new Error(message);
       }
 
-      const json = (await response.json()) as DealAnalysis;
+      const json = payload as DealAnalysis;
       setAnalysis(json);
       toast.success("Analysis complete.");
     } catch (error) {
