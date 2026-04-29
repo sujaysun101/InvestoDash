@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 
 import { DEMO_COOKIE_NAME, hasDemoCookie } from "@/lib/demo-auth";
 import { mockDeals, mockThesis, mockUsage } from "@/lib/mock-data";
+import { THESIS_PROFILE_COOKIE, parseThesisProfileCookie } from "@/lib/thesis-cookie";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Deal, ThesisProfile, UsageCounter } from "@/lib/types";
 
@@ -12,7 +13,14 @@ export async function loadDashboardData(): Promise<{
 }> {
   const cookieStore = cookies();
   if (hasDemoCookie(cookieStore.get(DEMO_COOKIE_NAME)?.value)) {
-    return { deals: mockDeals, thesis: mockThesis, usage: mockUsage };
+    const cookieThesis = parseThesisProfileCookie(
+      cookieStore.get(THESIS_PROFILE_COOKIE)?.value,
+    );
+    return {
+      deals: mockDeals,
+      thesis: cookieThesis ?? mockThesis,
+      usage: mockUsage,
+    };
   }
 
   const supabase = createServerSupabaseClient();

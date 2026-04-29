@@ -44,22 +44,29 @@ export function ThesisOnboardingForm({ sectors }: { sectors: string[] }) {
           data: { user },
         } = await supabase.auth.getUser();
 
-        if (!user) {
-          throw new Error("No authenticated user found.");
+        if (user) {
+          const { error } = await supabase.from("thesis").upsert({
+            user_id: user.id,
+            ...payload,
+          });
+          if (error) throw error;
+        } else {
+          const response = await fetch("/api/thesis", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!response.ok) {
+            const body = (await response.json().catch(() => null)) as { error?: string } | null;
+            throw new Error(body?.error ?? "Could not save thesis.");
+          }
         }
-
-        const { error } = await supabase.from("thesis").upsert({
-          user_id: user.id,
-          ...payload,
-        });
-
-        if (error) throw error;
       } else {
         window.localStorage.setItem("investodash:thesis", JSON.stringify(payload));
       }
 
       toast.success("Investment thesis saved.");
-      router.push("/");
+      router.push("/pipeline");
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not save thesis.");
