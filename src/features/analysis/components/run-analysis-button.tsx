@@ -59,11 +59,16 @@ export function RunAnalysisCard({
         }),
       });
 
+      const raw = await response.json().catch(() => null);
       if (!response.ok) {
-        throw new Error("Analysis request failed.");
+        const message =
+          raw && typeof raw === "object" && "error" in raw && typeof raw.error === "string"
+            ? raw.error
+            : "Analysis request failed.";
+        throw new Error(message);
       }
 
-      const json = (await response.json()) as DealAnalysis;
+      const json = raw as DealAnalysis;
       setAnalysis(json);
       toast.success("Analysis complete.");
     } catch (error) {

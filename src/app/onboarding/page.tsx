@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 import {
@@ -8,15 +9,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ThesisOnboardingForm } from "@/features/auth/components/thesis-onboarding-form";
-import { requireUser } from "@/lib/auth";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { THESIS_SECTORS } from "@/lib/constants";
+import { requireUser } from "@/lib/auth";
+import { DEMO_COOKIE_NAME, hasDemoCookie } from "@/lib/demo-auth";
+import { THESIS_PROFILE_COOKIE, parseThesisProfileCookie } from "@/lib/thesis-cookie";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export default async function OnboardingPage() {
   const user = await requireUser();
 
   if (!user) {
     redirect("/login");
+  }
+
+  const cookieStore = cookies();
+  if (
+    hasDemoCookie(cookieStore.get(DEMO_COOKIE_NAME)?.value) &&
+    parseThesisProfileCookie(cookieStore.get(THESIS_PROFILE_COOKIE)?.value)
+  ) {
+    redirect("/pipeline");
   }
 
   const supabase = createServerSupabaseClient();
@@ -29,7 +40,7 @@ export default async function OnboardingPage() {
       .maybeSingle();
 
     if (existingThesis) {
-      redirect("/compare");
+      redirect("/pipeline");
     }
   }
 
