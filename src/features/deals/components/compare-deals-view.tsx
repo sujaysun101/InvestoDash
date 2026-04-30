@@ -63,8 +63,8 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
   ];
 
   return (
-    <div className="flex flex-col gap-8">
-      <section className="flex flex-col gap-3">
+    <div className="flex flex-col gap-8" id="compare">
+      <section className="scroll-mt-8 flex flex-col gap-3">
         <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
           Compare view
         </p>
