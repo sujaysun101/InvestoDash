@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -21,10 +21,29 @@ import {
 } from "@/components/ui/table";
 import { Deal } from "@/lib/types";
 
-export function CompareDealsView({ deals }: { deals: Deal[] }) {
-  const [selectedIds, setSelectedIds] = useState<string[]>(
-    deals.slice(0, 2).map((deal) => deal.id),
+export function CompareDealsView({
+  deals,
+  variant = "page",
+}: {
+  deals: Deal[];
+  variant?: "page" | "section";
+}) {
+  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
+    deals.length === 0 ? [] : deals.slice(0, 2).map((deal) => deal.id),
   );
+
+  useEffect(() => {
+    setSelectedIds((prev) => {
+      const valid = prev.filter((id) => deals.some((d) => d.id === id));
+      if (deals.length === 0) {
+        return [];
+      }
+      if (valid.length > 0) {
+        return valid.slice(0, 4);
+      }
+      return deals.slice(0, 2).map((d) => d.id);
+    });
+  }, [deals]);
 
   const selectedDeals = useMemo(
     () => deals.filter((deal) => selectedIds.includes(deal.id)).slice(0, 4),
@@ -62,8 +81,8 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Sector", getter: (deal) => deal.sector },
   ];
 
-  return (
-    <div className="flex flex-col gap-8">
+  const hero =
+    variant === "page" ? (
       <section className="flex flex-col gap-3">
         <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
           Compare view
@@ -72,6 +91,40 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
           Select 2 to 4 deals for side-by-side scoring.
         </h1>
       </section>
+    ) : (
+      <div className="flex flex-col gap-2 border-b border-border/60 pb-6">
+        <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+          Compare deals
+        </p>
+        <h2 className="text-2xl font-semibold tracking-tight">
+          Side-by-side scores (2–4 deals)
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Toggle companies below; metrics mirror your diligence runs.
+        </p>
+      </div>
+    );
+
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        {hero}
+
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-sm text-muted-foreground">
+              No deals to compare yet. Add a deal from the pipeline or open a deal
+              card and run analysis to populate scores here.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-8">
+      {hero}
 
       <Card>
         <CardHeader>
@@ -93,30 +146,40 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Metric</TableHead>
-                {selectedDeals.map((deal) => (
-                  <TableHead key={deal.id}>{deal.company_name}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map(({ label, getter }) => (
-                <TableRow key={label}>
-                  <TableCell className="font-medium">{label}</TableCell>
+      {selectedDeals.length === 0 ? (
+        <Card>
+          <CardContent className="pt-6">
+            <p className="text-sm text-muted-foreground">
+              Select at least one deal above to see the comparison table.
+            </p>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="pt-6">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Metric</TableHead>
                   {selectedDeals.map((deal) => (
-                    <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    <TableHead key={deal.id}>{deal.company_name}</TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {rows.map(({ label, getter }) => (
+                  <TableRow key={label}>
+                    <TableCell className="font-medium">{label}</TableCell>
+                    {selectedDeals.map((deal) => (
+                      <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
