@@ -59,7 +59,7 @@ export function ThesisOnboardingForm({ sectors }: { sectors: string[] }) {
       }
 
       toast.success("Investment thesis saved.");
-      router.push("/");
+      router.push("/workspace");
       router.refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Could not save thesis.");
