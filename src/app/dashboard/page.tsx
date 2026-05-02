@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 
 // /dashboard is the canonical entry point for the app.
-// The deal comparison view lives at /compare — redirect there.
+// Pipeline Kanban is the primary workspace; comparison lives at /compare.
 export default function DashboardPage() {
-  redirect("/compare");
+  redirect("/pipeline");
 }
