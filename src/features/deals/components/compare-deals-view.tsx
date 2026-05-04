@@ -22,8 +22,8 @@ import {
 import { Deal } from "@/lib/types";
 
 export function CompareDealsView({ deals }: { deals: Deal[] }) {
-  const [selectedIds, setSelectedIds] = useState<string[]>(
-    deals.slice(0, 2).map((deal) => deal.id),
+  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
+    deals.length === 0 ? [] : deals.slice(0, 2).map((deal) => deal.id),
   );
 
   const selectedDeals = useMemo(
@@ -62,6 +62,9 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Sector", getter: (deal) => deal.sector },
   ];
 
+  const hasNoDeals = deals.length === 0;
+  const needsMoreSelection = !hasNoDeals && selectedDeals.length < 2;
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
@@ -80,41 +83,58 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
             Compare diligence scores, recommendation, risk, and thesis fit.
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-wrap gap-3">
-          {deals.map((deal) => (
-            <Button
-              key={deal.id}
-              onClick={() => toggleDeal(deal.id)}
-              variant={selectedIds.includes(deal.id) ? "secondary" : "outline"}
-            >
-              {deal.company_name}
-            </Button>
-          ))}
+        <CardContent className="flex flex-col gap-3">
+          {hasNoDeals ? (
+            <div className="rounded-2xl border border-dashed border-border/60 px-4 py-6 text-sm text-muted-foreground">
+              No deals to compare yet. Add deals from the pipeline or run analysis
+              on a deck first.
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-3">
+              {deals.map((deal) => (
+                <Button
+                  key={deal.id}
+                  onClick={() => toggleDeal(deal.id)}
+                  variant={selectedIds.includes(deal.id) ? "secondary" : "outline"}
+                >
+                  {deal.company_name}
+                </Button>
+              ))}
+            </div>
+          )}
         </CardContent>
       </Card>
 
       <Card>
         <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Metric</TableHead>
-                {selectedDeals.map((deal) => (
-                  <TableHead key={deal.id}>{deal.company_name}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map(({ label, getter }) => (
-                <TableRow key={label}>
-                  <TableCell className="font-medium">{label}</TableCell>
+          {hasNoDeals || needsMoreSelection ? (
+            <div className="rounded-2xl border border-dashed border-border/60 px-4 py-10 text-center text-sm text-muted-foreground">
+              {hasNoDeals
+                ? "Comparison table appears once you have at least one deal with scores."
+                : "Select at least two deals above to see the comparison table."}
+            </div>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Metric</TableHead>
                   {selectedDeals.map((deal) => (
-                    <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    <TableHead key={deal.id}>{deal.company_name}</TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {rows.map(({ label, getter }) => (
+                  <TableRow key={label}>
+                    <TableCell className="font-medium">{label}</TableCell>
+                    {selectedDeals.map((deal) => (
+                      <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </div>
