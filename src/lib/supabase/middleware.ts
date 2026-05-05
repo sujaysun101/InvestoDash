@@ -17,6 +17,7 @@ export async function updateSession(request: NextRequest) {
   if (!url || !anonKey) {
     const isProtectedPath =
       request.nextUrl.pathname.startsWith("/compare") ||
+      request.nextUrl.pathname.startsWith("/pipeline") ||
       request.nextUrl.pathname.startsWith("/dashboard") ||
       request.nextUrl.pathname.startsWith("/deals") ||
       request.nextUrl.pathname.startsWith("/onboarding");
@@ -58,6 +59,7 @@ export async function updateSession(request: NextRequest) {
 
   const isProtectedPath =
     request.nextUrl.pathname.startsWith("/compare") ||
+    request.nextUrl.pathname.startsWith("/pipeline") ||
     request.nextUrl.pathname.startsWith("/dashboard") ||
     request.nextUrl.pathname.startsWith("/deals") ||
     request.nextUrl.pathname.startsWith("/onboarding");
