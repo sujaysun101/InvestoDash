@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -62,6 +63,36 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Sector", getter: (deal) => deal.sector },
   ];
 
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+
+        <Card className="border-dashed border-border/80">
+          <CardHeader>
+            <CardTitle>No deals yet</CardTitle>
+            <CardDescription>
+              Add deals to your pipeline first. When you have two or more companies with
+              analysis, you can compare diligence scores here.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="secondary">
+              <Link href="/pipeline">Open pipeline</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
@@ -93,30 +124,51 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Metric</TableHead>
-                {selectedDeals.map((deal) => (
-                  <TableHead key={deal.id}>{deal.company_name}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map(({ label, getter }) => (
-                <TableRow key={label}>
-                  <TableCell className="font-medium">{label}</TableCell>
+      {deals.length === 1 ? (
+        <Card className="border-dashed border-border/80 bg-secondary/10">
+          <CardContent className="pt-6 text-sm text-muted-foreground">
+            You need at least two deals on your pipeline to run a comparison. Add another
+            company or open an existing deal from the{" "}
+            <Link className="font-medium text-primary underline-offset-4 hover:underline" href="/pipeline">
+              pipeline
+            </Link>
+            .
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {selectedDeals.length >= 2 ? (
+        <Card>
+          <CardContent className="pt-6">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Metric</TableHead>
                   {selectedDeals.map((deal) => (
-                    <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    <TableHead key={deal.id}>{deal.company_name}</TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {rows.map(({ label, getter }) => (
+                  <TableRow key={label}>
+                    <TableCell className="font-medium">{label}</TableCell>
+                    {selectedDeals.map((deal) => (
+                      <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      ) : deals.length >= 2 ? (
+        <Card className="border-dashed border-border/70">
+          <CardContent className="py-8 text-center text-sm text-muted-foreground">
+            Choose two to four deals from the row above to populate the comparison table.
+          </CardContent>
+        </Card>
+      ) : null}
     </div>
   );
 }
