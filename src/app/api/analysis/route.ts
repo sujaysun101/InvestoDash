@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -7,6 +8,7 @@ import {
 } from "@/features/analysis/server/anthropic";
 import { buildThesisFit } from "@/features/analysis/server/thesis-fit";
 import { buildWebResearchSummary } from "@/features/analysis/server/web-research";
+import { DEMO_COOKIE_NAME, hasDemoCookie } from "@/lib/demo-auth";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ThesisProfile } from "@/lib/types";
 
@@ -20,8 +22,10 @@ const requestSchema = z.object({
 
 export async function POST(request: Request) {
   const supabase = createServerSupabaseClient();
+  const cookieStore = cookies();
+  const demoSession = hasDemoCookie(cookieStore.get(DEMO_COOKIE_NAME)?.value);
 
-  if (supabase) {
+  if (supabase && !demoSession) {
     const {
       data: { user },
     } = await supabase.auth.getUser();
