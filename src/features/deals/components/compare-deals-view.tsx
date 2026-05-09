@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,7 @@ import {
 import { Deal } from "@/lib/types";
 
 export function CompareDealsView({ deals }: { deals: Deal[] }) {
-  const [selectedIds, setSelectedIds] = useState<string[]>(
+  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
     deals.slice(0, 2).map((deal) => deal.id),
   );
 
@@ -34,7 +35,10 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
   function toggleDeal(id: string) {
     setSelectedIds((current) =>
       current.includes(id)
-        ? current.filter((item) => item !== id)
+        ? (() => {
+            const next = current.filter((item) => item !== id);
+            return next.length > 0 ? next : current;
+          })()
         : current.length < 4
           ? [...current, id]
           : [...current.slice(1), id],
@@ -61,6 +65,36 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Stage", getter: (deal) => deal.stage },
     { label: "Sector", getter: (deal) => deal.sector },
   ];
+
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+
+        <Card className="border-dashed border-border/80">
+          <CardContent className="flex flex-col gap-3 py-12 text-center">
+            <p className="text-sm font-medium text-foreground">No deals to compare yet</p>
+            <p className="text-sm text-muted-foreground">
+              Add companies to your pipeline, run diligence, then return here to stack-rank
+              opportunities.
+            </p>
+            <div className="pt-2">
+              <Button asChild variant="secondary">
+                <Link href="/dashboard">Go to pipeline</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8">
