@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,7 @@ import {
 import { Deal } from "@/lib/types";
 
 export function CompareDealsView({ deals }: { deals: Deal[] }) {
-  const [selectedIds, setSelectedIds] = useState<string[]>(
+  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
     deals.slice(0, 2).map((deal) => deal.id),
   );
 
@@ -38,6 +39,35 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         : current.length < 4
           ? [...current, id]
           : [...current.slice(1), id],
+    );
+  }
+
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+        <Card>
+          <CardHeader>
+            <CardTitle>No deals to compare yet</CardTitle>
+            <CardDescription>
+              Add deals from your pipeline or use Internal Demo Login on the sign-in page to load
+              sample data.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button asChild variant="secondary">
+              <Link href="/dashboard">Go to pipeline</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
