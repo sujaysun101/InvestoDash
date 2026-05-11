@@ -60,7 +60,16 @@ export function RunAnalysisCard({
       });
 
       if (!response.ok) {
-        throw new Error("Analysis request failed.");
+        let detail = "Analysis request failed.";
+        try {
+          const errBody = (await response.json()) as { error?: string };
+          if (errBody.error) {
+            detail = errBody.error;
+          }
+        } catch {
+          // ignore non-JSON error bodies
+        }
+        throw new Error(detail);
       }
 
       const json = (await response.json()) as DealAnalysis;
