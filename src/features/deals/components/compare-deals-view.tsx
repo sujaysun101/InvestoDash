@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,34 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         : current.length < 4
           ? [...current, id]
           : [...current.slice(1), id],
+    );
+  }
+
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">Compare deals</h1>
+          <p className="max-w-xl text-sm text-muted-foreground">
+            You need at least one deal in your pipeline before you can run a
+            side-by-side comparison. Add a deal from your CRM or open the deal
+            room from the pipeline.
+          </p>
+        </section>
+        <Card>
+          <CardContent className="flex flex-col items-start gap-4 pt-6">
+            <p className="text-sm text-muted-foreground">
+              No deals are loaded for this workspace yet.
+            </p>
+            <Button asChild variant="secondary">
+              <Link href="/dashboard">Back to pipeline</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -92,6 +121,12 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
           ))}
         </CardContent>
       </Card>
+
+      {selectedDeals.length < 2 ? (
+        <p className="text-sm text-muted-foreground">
+          Select at least two deals to compare scores side-by-side (up to four).
+        </p>
+      ) : null}
 
       <Card>
         <CardContent className="pt-6">
