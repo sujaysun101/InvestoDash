@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +39,31 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         : current.length < 4
           ? [...current, id]
           : [...current.slice(1), id],
+    );
+  }
+
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">Compare deals</h1>
+          <p className="max-w-xl text-sm text-muted-foreground">
+            Add deals from the pipeline or deal room first. When you have at least one
+            analyzed deal, you can select up to four for side-by-side scoring.
+          </p>
+        </section>
+        <Card>
+          <CardContent className="flex flex-col items-start gap-4 py-10">
+            <p className="text-sm text-muted-foreground">No deals in your workspace yet.</p>
+            <Button asChild variant="secondary">
+              <Link href="/dashboard">Go to pipeline</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
