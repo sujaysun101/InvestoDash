@@ -1,7 +1,38 @@
-import { redirect } from "next/navigation";
+import Link from "next/link";
 
-// /dashboard is the canonical entry point for the app.
-// The deal comparison view lives at /compare — redirect there.
-export default function DashboardPage() {
-  redirect("/compare");
+import { AppShell } from "@/components/app-shell";
+import { Button } from "@/components/ui/button";
+import { DealBoard } from "@/features/deals/components/deal-board";
+import { requireUser } from "@/lib/auth";
+import { loadDashboardData } from "@/lib/data";
+
+export default async function DashboardPage() {
+  const user = await requireUser();
+  const { deals, thesis, usage } = await loadDashboardData();
+
+  return (
+    <AppShell thesis={thesis} usage={usage} userEmail={user.email ?? null}>
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-3">
+            <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+              Pipeline
+            </p>
+            <h1 className="text-4xl font-semibold tracking-tight">
+              Move deals from inbox to invested.
+            </h1>
+            <p className="max-w-2xl text-sm text-muted-foreground">
+              Open a deal card for AI diligence, thesis fit, and exports. Use compare
+              when you want side-by-side scoring across opportunities.
+            </p>
+          </div>
+          <Button asChild className="shrink-0" variant="secondary">
+            <Link href="/compare">Compare deals</Link>
+          </Button>
+        </section>
+
+        <DealBoard deals={deals} />
+      </div>
+    </AppShell>
+  );
 }
