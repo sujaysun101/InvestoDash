@@ -41,6 +41,31 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     );
   }
 
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+
+        <Card>
+          <CardContent className="py-12 text-center text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">No deals to compare yet.</p>
+            <p className="mt-2">
+              Add a deal from the pipeline or run an analysis from a deal room. When
+              deals appear here, you can pick up to four for a scorecard.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   const rows: Array<{
     label: string;
     getter: (deal: Deal) => React.ReactNode;
