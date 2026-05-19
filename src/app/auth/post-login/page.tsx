@@ -17,13 +17,13 @@ export default async function PostLoginPage() {
   }
 
   if (user.isDemo) {
-    redirect("/compare");
+    redirect("/dashboard");
   }
 
   const supabase = createServerSupabaseClient();
 
   if (!supabase) {
-    redirect("/compare");
+    redirect("/dashboard");
   }
 
   const { data: existingThesis } = await supabase
