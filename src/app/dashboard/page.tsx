@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation";
 
-// /dashboard is the canonical entry point for the app.
-// The deal comparison view lives at /compare — redirect there.
+// /dashboard is the canonical entry point for the app — send users to the Kanban.
 export default function DashboardPage() {
-  redirect("/compare");
+  redirect("/pipeline");
 }

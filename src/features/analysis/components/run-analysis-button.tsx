@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnalysisPanel } from "@/features/analysis/components/analysis-panel";
 import { DownloadReportButton } from "@/features/analysis/components/download-report-button";
+import { MIN_DECK_TEXT_LENGTH } from "@/lib/constants";
 import { Deal, DealAnalysis, ThesisProfile } from "@/lib/types";
 
 export function RunAnalysisCard({
@@ -27,7 +28,11 @@ export function RunAnalysisCard({
   const [showPaywall, setShowPaywall] = useState(false);
 
   const disabledReason = useMemo(() => {
-    if (!parsedDeckText) return "Upload a deck first.";
+    const trimmed = parsedDeckText.trim();
+    if (!trimmed) return "Upload a deck first.";
+    if (trimmed.length < MIN_DECK_TEXT_LENGTH) {
+      return `Extract at least ${MIN_DECK_TEXT_LENGTH} characters from the PDF (try a text-based deck or more pages).`;
+    }
     if (!thesis) return "Complete the thesis profile first.";
     return null;
   }, [parsedDeckText, thesis]);
@@ -60,7 +65,16 @@ export function RunAnalysisCard({
       });
 
       if (!response.ok) {
-        throw new Error("Analysis request failed.");
+        let message = "Analysis request failed.";
+        try {
+          const data = (await response.json()) as { error?: string };
+          if (typeof data.error === "string" && data.error.length > 0) {
+            message = data.error;
+          }
+        } catch {
+          // ignore JSON parse errors
+        }
+        throw new Error(message);
       }
 
       const json = (await response.json()) as DealAnalysis;
