@@ -22,7 +22,7 @@ import {
 import { Deal } from "@/lib/types";
 
 export function CompareDealsView({ deals }: { deals: Deal[] }) {
-  const [selectedIds, setSelectedIds] = useState<string[]>(
+  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
     deals.slice(0, 2).map((deal) => deal.id),
   );
 
@@ -47,7 +47,9 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
   }> = [
     {
       label: "Recommendation",
-      getter: (deal) => <Badge>{deal.analysis?.recommendation.verdict ?? "N/A"}</Badge>,
+      getter: (deal) => (
+        <Badge>{deal.analysis?.recommendation?.verdict ?? "N/A"}</Badge>
+      ),
     },
     { label: "Team score", getter: (deal) => deal.analysis?.team_score.score ?? "—" },
     { label: "Market score", getter: (deal) => deal.analysis?.market_score.score ?? "—" },
@@ -61,6 +63,28 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Stage", getter: (deal) => deal.stage },
     { label: "Sector", getter: (deal) => deal.sector },
   ];
+
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+
+        <Card>
+          <CardContent className="py-12 text-center text-sm text-muted-foreground">
+            No deals in your workspace yet. Add deals in Supabase or use the internal
+            demo login from the sign-in page to load sample data.
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8">
@@ -94,7 +118,13 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
       </Card>
 
       <Card>
-        <CardContent className="pt-6">
+        <CardContent className="flex flex-col gap-3 pt-6">
+          {selectedDeals.length < 2 ? (
+            <p className="text-sm text-muted-foreground">
+              Select at least two deals for a side-by-side comparison. You can compare
+              up to four at once.
+            </p>
+          ) : null}
           <Table>
             <TableHeader>
               <TableRow>

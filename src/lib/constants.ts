@@ -1,5 +1,8 @@
 import { PipelineStage } from "@/lib/types";
 
+/** Minimum extracted characters required before the analysis API accepts a deck. */
+export const MIN_DECK_TEXT_LENGTH = 50;
+
 export const PIPELINE_STAGES: PipelineStage[] = [
   "Inbox",
   "Reviewing",

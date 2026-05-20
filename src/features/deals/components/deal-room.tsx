@@ -36,7 +36,7 @@ export function DealRoom({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-3">
           <Button asChild className="w-fit" variant="ghost">
-            <Link href="/">
+            <Link href="/pipeline">
               <ArrowLeft />
               Back to pipeline
             </Link>
@@ -54,12 +54,14 @@ export function DealRoom({
             </p>
           </div>
         </div>
-        <Button asChild variant="outline">
-          <a href={deal.website_url} rel="noreferrer" target="_blank">
-            <Globe />
-            Visit website
-          </a>
-        </Button>
+        {deal.website_url?.trim() ? (
+          <Button asChild variant="outline">
+            <a href={deal.website_url} rel="noreferrer" target="_blank">
+              <Globe />
+              Visit website
+            </a>
+          </Button>
+        ) : null}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -123,7 +125,9 @@ export function DealRoom({
               <DeckUpload dealId={deal.id} onDeckParsed={setParsedDeckText} />
               {parsedDeckText ? (
                 <div className="rounded-2xl border border-border/60 bg-secondary/30 p-4 text-sm text-muted-foreground">
-                  {parsedDeckText.slice(0, 320)}...
+                  {parsedDeckText.length > 320
+                    ? `${parsedDeckText.slice(0, 320)}…`
+                    : parsedDeckText}
                 </div>
               ) : null}
             </CardContent>
@@ -147,22 +151,27 @@ export function DealRoom({
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              {deal.activity.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-2xl border border-border/60 bg-secondary/30 p-4"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm font-medium">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.timestamp}
-                    </p>
-                  </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {item.note}
-                  </p>
+              {deal.activity.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-border/60 px-4 py-8 text-center text-sm text-muted-foreground">
+                  No activity yet. Notes and pipeline moves will show up here as you
+                  work the deal.
                 </div>
-              ))}
+              ) : (
+                deal.activity.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-border/60 bg-secondary/30 p-4"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.timestamp}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground">{item.note}</p>
+                  </div>
+                ))
+              )}
             </CardContent>
           </Card>
 
