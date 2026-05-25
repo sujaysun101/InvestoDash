@@ -62,6 +62,30 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Sector", getter: (deal) => deal.sector },
   ];
 
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+        <Card>
+          <CardContent className="py-12 text-center text-sm text-muted-foreground">
+            <p className="font-medium text-foreground">No deals to compare yet.</p>
+            <p className="mt-2">
+              Add deals to your pipeline or complete sign-in, then return here to
+              line up diligence scores across opportunities.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
@@ -92,6 +116,12 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
           ))}
         </CardContent>
       </Card>
+
+      {selectedDeals.length < 2 ? (
+        <p className="text-sm text-muted-foreground">
+          Choose at least two deals to see a meaningful side-by-side comparison.
+        </p>
+      ) : null}
 
       <Card>
         <CardContent className="pt-6">
