@@ -36,7 +36,7 @@ export function DealRoom({
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="flex flex-col gap-3">
           <Button asChild className="w-fit" variant="ghost">
-            <Link href="/">
+            <Link href="/pipeline">
               <ArrowLeft />
               Back to pipeline
             </Link>
@@ -54,12 +54,14 @@ export function DealRoom({
             </p>
           </div>
         </div>
-        <Button asChild variant="outline">
-          <a href={deal.website_url} rel="noreferrer" target="_blank">
-            <Globe />
-            Visit website
-          </a>
-        </Button>
+        {deal.website_url.trim() ? (
+          <Button asChild variant="outline">
+            <a href={deal.website_url} rel="noreferrer" target="_blank">
+              <Globe />
+              Visit website
+            </a>
+          </Button>
+        ) : null}
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.1fr_0.9fr]">
@@ -147,22 +149,29 @@ export function DealRoom({
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              {deal.activity.map((item) => (
-                <div
-                  key={item.id}
-                  className="rounded-2xl border border-border/60 bg-secondary/30 p-4"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="text-sm font-medium">{item.title}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {item.timestamp}
+              {deal.activity.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-border/60 px-4 py-6 text-sm text-muted-foreground">
+                  No notes or status changes yet. Activity from diligence will
+                  appear here.
+                </div>
+              ) : (
+                deal.activity.map((item) => (
+                  <div
+                    key={item.id}
+                    className="rounded-2xl border border-border/60 bg-secondary/30 p-4"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-sm font-medium">{item.title}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.timestamp}
+                      </p>
+                    </div>
+                    <p className="mt-2 text-sm text-muted-foreground">
+                      {item.note}
                     </p>
                   </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    {item.note}
-                  </p>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
 
