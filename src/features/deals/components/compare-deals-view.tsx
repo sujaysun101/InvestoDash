@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -61,6 +62,34 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Stage", getter: (deal) => deal.stage },
     { label: "Sector", getter: (deal) => deal.sector },
   ];
+
+  if (deals.length < 2) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+
+        <Card>
+          <CardContent className="flex flex-col gap-4 pt-6">
+            <p className="text-sm text-muted-foreground">
+              {deals.length === 0
+                ? "Add deals to your pipeline before running a comparison."
+                : "Add at least one more deal to compare scores side by side."}
+            </p>
+            <Button asChild className="w-fit" variant="secondary">
+              <Link href="/dashboard">Open pipeline</Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-8">
