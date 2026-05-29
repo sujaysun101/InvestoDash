@@ -22,8 +22,8 @@ import {
 import { Deal } from "@/lib/types";
 
 export function CompareDealsView({ deals }: { deals: Deal[] }) {
-  const [selectedIds, setSelectedIds] = useState<string[]>(
-    deals.slice(0, 2).map((deal) => deal.id),
+  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
+    deals.slice(0, Math.min(2, deals.length)).map((deal) => deal.id),
   );
 
   const selectedDeals = useMemo(
@@ -73,6 +73,15 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         </h1>
       </section>
 
+      {deals.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center text-sm text-muted-foreground">
+            No deals in your pipeline yet. Add deals from the pipeline board, run
+            analysis, then return here to compare scores.
+          </CardContent>
+        </Card>
+      ) : (
+        <>
       <Card>
         <CardHeader>
           <CardTitle>Pick deals</CardTitle>
@@ -117,6 +126,8 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
           </Table>
         </CardContent>
       </Card>
+        </>
+      )}
     </div>
   );
 }
