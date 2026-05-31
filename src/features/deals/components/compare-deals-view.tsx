@@ -22,8 +22,8 @@ import {
 import { Deal } from "@/lib/types";
 
 export function CompareDealsView({ deals }: { deals: Deal[] }) {
-  const [selectedIds, setSelectedIds] = useState<string[]>(
-    deals.slice(0, 2).map((deal) => deal.id),
+  const [selectedIds, setSelectedIds] = useState<string[]>(() =>
+    deals.length >= 2 ? deals.slice(0, 2).map((deal) => deal.id) : [],
   );
 
   const selectedDeals = useMemo(
@@ -62,6 +62,50 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Sector", getter: (deal) => deal.sector },
   ];
 
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Side-by-side deal scoring
+          </h1>
+        </section>
+        <div className="rounded-2xl border border-dashed border-border/60 px-6 py-12 text-center">
+          <p className="text-lg font-medium">No deals to compare yet</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Add deals to your pipeline first, then return here to compare
+            diligence scores across 2–4 companies.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (deals.length === 1) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+        <div className="rounded-2xl border border-dashed border-border/60 px-6 py-12 text-center">
+          <p className="text-lg font-medium">Need at least two deals</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            You have one deal in the pipeline ({deals[0].company_name}). Add
+            another analyzed deal to enable comparison.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
@@ -93,6 +137,11 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         </CardContent>
       </Card>
 
+      {selectedDeals.length < 2 ? (
+        <div className="rounded-2xl border border-dashed border-border/60 px-6 py-10 text-center text-sm text-muted-foreground">
+          Select at least two deals above to see the comparison table.
+        </div>
+      ) : (
       <Card>
         <CardContent className="pt-6">
           <Table>
@@ -117,6 +166,7 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
           </Table>
         </CardContent>
       </Card>
+      )}
     </div>
   );
 }
