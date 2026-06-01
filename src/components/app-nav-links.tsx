@@ -7,7 +7,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
-  { href: "/dashboard", label: "Pipeline", match: (path: string) => path === "/dashboard" },
+  {
+    href: "/dashboard",
+    label: "Pipeline",
+    match: (path: string) =>
+      path === "/dashboard" || path.startsWith("/deals/"),
+  },
   {
     href: "/compare",
     label: "Compare Deals",
