@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -79,6 +80,9 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
             Add deals to your pipeline first, then return here to compare
             diligence scores across 2–4 companies.
           </p>
+          <Button asChild className="mt-6" variant="secondary">
+            <Link href="/dashboard">Open pipeline</Link>
+          </Button>
         </div>
       </div>
     );
