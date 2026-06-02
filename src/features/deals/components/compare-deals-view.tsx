@@ -105,6 +105,9 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
             You have one deal in the pipeline ({deals[0].company_name}). Add
             another analyzed deal to enable comparison.
           </p>
+          <Button asChild className="mt-6" variant="secondary">
+            <Link href="/dashboard">Open pipeline</Link>
+          </Button>
         </div>
       </div>
     );
