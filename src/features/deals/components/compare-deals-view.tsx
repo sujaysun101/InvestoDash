@@ -145,8 +145,13 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
       </Card>
 
       {selectedDeals.length < 2 ? (
-        <div className="rounded-2xl border border-dashed border-border/60 px-6 py-10 text-center text-sm text-muted-foreground">
-          Select at least two deals above to see the comparison table.
+        <div className="rounded-2xl border border-dashed border-border/60 px-6 py-10 text-center">
+          <p className="text-sm text-muted-foreground">
+            Select at least two deals above to see the comparison table.
+          </p>
+          <Button asChild className="mt-6" variant="secondary">
+            <Link href="/dashboard">Open pipeline</Link>
+          </Button>
         </div>
       ) : (
       <Card>
