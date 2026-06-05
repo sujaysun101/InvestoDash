@@ -1,36 +1,78 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# InvestoDash
 
-## Getting Started
+InvestoDash is an AI-powered deal OS for angel investors — a persistent CRM plus diligence workspace for managing startup deal flow.
 
-First, run the development server:
+Built for the Codex Creator Challenge.
+
+## Features
+
+- **Pitch deck upload** — PDF and PPTX decks parsed client-side before analysis
+- **AI diligence reports** — structured VC-style scoring across team, market, traction, and business model
+- **Thesis matching** — score deals against your investment criteria
+- **Live web research** — founder and claim cross-checks stored with each analysis
+- **Deal pipeline** — Kanban board from Inbox → Invested
+- **Deal comparison** — side-by-side scoring across 2–4 deals
+- **PDF export** — downloadable diligence reports
+
+## Stack
+
+- Next.js 14 (App Router) + TypeScript
+- Supabase (auth, Postgres, Storage)
+- Tailwind CSS + shadcn/ui
+- Anthropic Claude (server-side analysis)
+- Recharts, jsPDF, pdf.js, JSZip
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
 pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Environment variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.example` to `.env.local` and configure:
 
-## Learn More
+| Variable | Required | Description |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | For production auth/data | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | For production auth/data | Supabase anon key |
+| `ANTHROPIC_API_KEY` | For live AI analysis | Anthropic API key |
+| `ANTHROPIC_MODEL` | For live AI analysis | Model ID (e.g. `claude-sonnet-4-20250514`) |
+| `ENABLE_INTERNAL_DEMO` | Optional | Set to `true` to enable passwordless demo login |
 
-To learn more about Next.js, take a look at the following resources:
+Without Supabase or Anthropic keys, the app runs in **demo mode** with mock deals and heuristic-based analysis.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Database setup
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Apply migrations in `supabase/migrations/` to your Supabase project. The schema includes `thesis`, `deals`, `deal_analysis`, `deal_activity`, `deal_files`, and `usage_counters`.
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+pnpm dev      # development server
+pnpm build    # production build
+pnpm lint     # ESLint
+pnpm start    # production server
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## App routes
+
+| Route | Description |
+| --- | --- |
+| `/` | Marketing landing page |
+| `/login` | Sign in (Google OAuth or internal demo) |
+| `/onboarding` | Investment thesis setup |
+| `/dashboard` | Kanban deal pipeline |
+| `/deals/[id]` | Deal room — upload deck, run analysis, update status |
+| `/compare` | Side-by-side deal comparison |
+
+## Demo flow
+
+1. Enable `ENABLE_INTERNAL_DEMO=true` or configure Supabase + Google OAuth
+2. Sign in and complete thesis onboarding (or use demo defaults)
+3. Open the pipeline at `/dashboard` and click a deal
+4. Upload a PDF or PPTX deck, then run analysis
+5. Compare deals at `/compare` and export a PDF report

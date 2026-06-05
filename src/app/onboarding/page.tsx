@@ -19,6 +19,10 @@ export default async function OnboardingPage() {
     redirect("/login");
   }
 
+  if (user.isDemo) {
+    redirect("/dashboard");
+  }
+
   const supabase = createServerSupabaseClient();
 
   if (supabase) {
@@ -29,7 +33,7 @@ export default async function OnboardingPage() {
       .maybeSingle();
 
     if (existingThesis) {
-      redirect("/compare");
+      redirect("/dashboard");
     }
   }
 
