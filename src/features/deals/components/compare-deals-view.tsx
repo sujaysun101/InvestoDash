@@ -73,50 +73,64 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         </h1>
       </section>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Pick deals</CardTitle>
-          <CardDescription>
-            Compare diligence scores, recommendation, risk, and thesis fit.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-3">
-          {deals.map((deal) => (
-            <Button
-              key={deal.id}
-              onClick={() => toggleDeal(deal.id)}
-              variant={selectedIds.includes(deal.id) ? "secondary" : "outline"}
-            >
-              {deal.company_name}
-            </Button>
-          ))}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Metric</TableHead>
-                {selectedDeals.map((deal) => (
-                  <TableHead key={deal.id}>{deal.company_name}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map(({ label, getter }) => (
-                <TableRow key={label}>
-                  <TableCell className="font-medium">{label}</TableCell>
-                  {selectedDeals.map((deal) => (
-                    <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
-                  ))}
-                </TableRow>
+      {deals.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-border/60 px-6 py-12 text-center">
+          <p className="text-lg font-medium">No deals to compare yet</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Add deals to your pipeline first, then return here to compare scores
+            side by side.
+          </p>
+        </div>
+      ) : (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle>Pick deals</CardTitle>
+              <CardDescription>
+                Compare diligence scores, recommendation, risk, and thesis fit.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="flex flex-wrap gap-3">
+              {deals.map((deal) => (
+                <Button
+                  key={deal.id}
+                  onClick={() => toggleDeal(deal.id)}
+                  variant={selectedIds.includes(deal.id) ? "secondary" : "outline"}
+                >
+                  {deal.company_name}
+                </Button>
               ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="pt-6">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Metric</TableHead>
+                    {selectedDeals.map((deal) => (
+                      <TableHead key={deal.id}>{deal.company_name}</TableHead>
+                    ))}
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {rows.map(({ label, getter }) => (
+                    <TableRow key={label}>
+                      <TableCell className="font-medium">{label}</TableCell>
+                      {selectedDeals.map((deal) => (
+                        <TableCell key={`${deal.id}-${label}`}>
+                          {getter(deal)}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 }
