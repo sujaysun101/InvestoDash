@@ -1,7 +1,5 @@
-import Link from "next/link";
-
+import { AppNavLinks } from "@/components/app-nav-links";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { SignOutButton } from "@/features/auth/components/sign-out-button";
 import { ThesisProfile, UsageCounter } from "@/lib/types";
@@ -35,18 +33,7 @@ export function AppShell({
             </div>
 
             <nav className="flex flex-col gap-2">
-              <Button asChild className="justify-start" variant="ghost">
-                <Link href="/compare">Pipeline</Link>
-              </Button>
-              <Button asChild className="justify-start" variant="ghost">
-                <Link href="/compare">Compare Deals</Link>
-              </Button>
-              <Button asChild className="justify-start" variant="ghost">
-                <Link href="/onboarding">Investment Thesis</Link>
-              </Button>
-              <Button asChild className="justify-start" variant="ghost">
-                <Link href="/login">Account</Link>
-              </Button>
+              <AppNavLinks />
               <SignOutButton />
             </nav>
 
