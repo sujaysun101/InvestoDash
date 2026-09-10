@@ -50,6 +50,11 @@ for (const file of postLoginTargets) {
   }
 }
 
+const dealRoom = read("src/features/deals/components/deal-room.tsx");
+if (dealRoom.includes('href="/"') && dealRoom.includes("Back to pipeline")) {
+  errors.push("Deal room back link must point to /dashboard, not /");
+}
+
 if (errors.length > 0) {
   console.error("Navigation guard failed:\n");
   for (const error of errors) {
