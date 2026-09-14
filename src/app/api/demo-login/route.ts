@@ -12,7 +12,7 @@ export async function POST() {
   }
 
   const response = NextResponse.json({
-    redirectTo: "/compare",
+    redirectTo: "/dashboard",
   });
 
   response.cookies.set({
