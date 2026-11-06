@@ -23,7 +23,7 @@ import { Deal } from "@/lib/types";
 
 export function CompareDealsView({ deals }: { deals: Deal[] }) {
   const [selectedIds, setSelectedIds] = useState<string[]>(
-    deals.slice(0, 2).map((deal) => deal.id),
+    deals.length ? deals.slice(0, Math.min(2, deals.length)).map((deal) => deal.id) : [],
   );
 
   const selectedDeals = useMemo(
@@ -62,6 +62,29 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Sector", getter: (deal) => deal.sector },
   ];
 
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+        <Card>
+          <CardContent className="px-6 py-12 text-center">
+            <p className="text-sm text-muted-foreground">
+              No deals to compare yet. Add companies from your pipeline, then open Compare
+              again.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
@@ -93,30 +116,38 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         </CardContent>
       </Card>
 
-      <Card>
-        <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Metric</TableHead>
-                {selectedDeals.map((deal) => (
-                  <TableHead key={deal.id}>{deal.company_name}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map(({ label, getter }) => (
-                <TableRow key={label}>
-                  <TableCell className="font-medium">{label}</TableCell>
+      {selectedDeals.length === 0 ? (
+        <Card>
+          <CardContent className="px-6 py-10 text-center text-sm text-muted-foreground">
+            Select at least one deal above to see side-by-side metrics.
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardContent className="pt-6">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Metric</TableHead>
                   {selectedDeals.map((deal) => (
-                    <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    <TableHead key={deal.id}>{deal.company_name}</TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {rows.map(({ label, getter }) => (
+                  <TableRow key={label}>
+                    <TableCell className="font-medium">{label}</TableCell>
+                    {selectedDeals.map((deal) => (
+                      <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
