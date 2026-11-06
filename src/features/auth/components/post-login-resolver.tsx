@@ -52,7 +52,7 @@ export function PostLoginResolver() {
         return;
       }
 
-      window.location.replace(thesis ? "/compare" : "/onboarding");
+      window.location.replace(thesis ? "/pipeline" : "/onboarding");
     }
 
     void resolveDestination();

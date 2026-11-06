@@ -29,7 +29,7 @@ export default async function OnboardingPage() {
       .maybeSingle();
 
     if (existingThesis) {
-      redirect("/compare");
+      redirect("/pipeline");
     }
   }
 
