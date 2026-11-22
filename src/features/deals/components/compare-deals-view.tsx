@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -62,6 +63,34 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
     { label: "Sector", getter: (deal) => deal.sector },
   ];
 
+  if (deals.length === 0) {
+    return (
+      <div className="flex flex-col gap-8">
+        <section className="flex flex-col gap-3">
+          <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground">
+            Compare view
+          </p>
+          <h1 className="text-4xl font-semibold tracking-tight">
+            Select 2 to 4 deals for side-by-side scoring.
+          </h1>
+        </section>
+
+        <div className="rounded-2xl border border-dashed border-border/60 px-6 py-12 text-center">
+          <p className="text-lg font-medium">No deals available to compare</p>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Add deals from the pipeline first, then return here to compare
+            diligence scores side by side.
+          </p>
+          <Button asChild className="mt-6" variant="secondary">
+            <Link href="/dashboard">Go to pipeline</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
+
+  const canCompare = selectedDeals.length >= 2;
+
   return (
     <div className="flex flex-col gap-8">
       <section className="flex flex-col gap-3">
@@ -71,6 +100,11 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
         <h1 className="text-4xl font-semibold tracking-tight">
           Select 2 to 4 deals for side-by-side scoring.
         </h1>
+        {!canCompare ? (
+          <p className="text-sm text-muted-foreground">
+            Choose at least two deals below to load the comparison table.
+          </p>
+        ) : null}
       </section>
 
       <Card>
@@ -95,26 +129,38 @@ export function CompareDealsView({ deals }: { deals: Deal[] }) {
 
       <Card>
         <CardContent className="pt-6">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Metric</TableHead>
-                {selectedDeals.map((deal) => (
-                  <TableHead key={deal.id}>{deal.company_name}</TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {rows.map(({ label, getter }) => (
-                <TableRow key={label}>
-                  <TableCell className="font-medium">{label}</TableCell>
+          {canCompare ? (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Metric</TableHead>
                   {selectedDeals.map((deal) => (
-                    <TableCell key={`${deal.id}-${label}`}>{getter(deal)}</TableCell>
+                    <TableHead key={deal.id}>{deal.company_name}</TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {rows.map(({ label, getter }) => (
+                  <TableRow key={label}>
+                    <TableCell className="font-medium">{label}</TableCell>
+                    {selectedDeals.map((deal) => (
+                      <TableCell key={`${deal.id}-${label}`}>
+                        {getter(deal)}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          ) : (
+            <div className="rounded-xl border border-dashed border-border/60 px-6 py-10 text-center">
+              <p className="font-medium">Comparison table needs two or more deals</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Selected: {selectedDeals.length} of 2 minimum. Tap company pills
+                above to add another deal.
+              </p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
