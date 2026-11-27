@@ -56,8 +56,8 @@ export function AppShell({
                 </div>
                 <p className="text-sm text-muted-foreground">
                   {usage.remaining > 0
-                    ? `${usage.remaining} analyses left before the paywall.`
-                    : "Free tier exhausted. Prompt the subscription modal on next run."}
+                    ? `${usage.remaining} free ${usage.remaining === 1 ? "analysis" : "analyses"} remaining this month.`
+                    : "Free tier used up. Open a deal and run analysis to see upgrade options."}
                 </p>
               </CardContent>
             </Card>
